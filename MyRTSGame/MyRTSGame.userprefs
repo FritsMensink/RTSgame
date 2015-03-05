@@ -1,0 +1,26 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\School\jaar 3\game development\MyRTSGame\Assets\WorldObject\Building\Building.cs">
+    <Files>
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\Player\Player.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\WorldObject\Building\WarFactory\WarFactory.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\Player\HUD\HUD.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\WorldObject\Unit\Tank\Tank.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\WorldObject\Building\Building.cs" Line="19" Column="118" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\Player\UserInput.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\WorldObject\WorldObject.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\RTS\ResourceManager.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\WorldObject\Unit\Unit.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\RTS\WorkManager.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\RTS\Enums.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\Resources\GameObjectList.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\WorldObject\Unit\Units.cs" Line="1" Column="1" />
+      <File FileName="..\School\jaar 3\game development\MyRTSGame\Assets\WorldObject\Building\Buildings.cs" Line="1" Column="1" />
+      <File FileName="Assets\WorldObject\Unit\Unit.cs" Line="15" Column="3" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

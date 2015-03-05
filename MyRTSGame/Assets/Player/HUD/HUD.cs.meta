@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: f10595768f82cf947b62babbde40f7da
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - resourceSkin: {fileID: 11400000, guid: aa94f09b39b35fa49bd180c3f2d40edc, type: 2}
+  - ordersSkin: {fileID: 11400000, guid: a9d4c2536ae5bc3458c9e2f9f254a401, type: 2}
+  - selectBoxSkin: {fileID: 11400000, guid: e550195fafd852a40a4527d7709b5978, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
