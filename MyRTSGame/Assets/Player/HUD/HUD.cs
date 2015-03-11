@@ -48,6 +48,11 @@ public class HUD : MonoBehaviour {
 
 	public Texture2D smallButtonHover, smallButtonClick;
 
+	public AudioClip clickSound;
+	public float clickVolume = 1.0f;
+	
+	private AudioElement audioElement;
+
 	// Use this for initialization
 	void Start () {
 		player = transform.root.GetComponent<Player> ();
@@ -77,6 +82,12 @@ public class HUD : MonoBehaviour {
 
 		buildAreaHeight = Screen.height - RESOURCE_BAR_HEIGHT - SELECTION_NAME_HEIGHT - 2 * BUTTON_SPACING;
 		SetCursorState(CursorState.Select);
+
+		List< AudioClip > sounds = new List< AudioClip >();
+		List< float > volumes = new List< float >();
+		sounds.Add(clickSound);
+		volumes.Add (clickVolume);
+		audioElement = new AudioElement(sounds, volumes, "HUD", null);
 	}
 	
 	// Update is called once per frame
@@ -244,6 +255,21 @@ public class HUD : MonoBehaviour {
 		textLeft += TEXT_WIDTH;
 		DrawResourceIcon(ResourceType.Power, iconLeft, textLeft, topPos);
 
+		//menu knoppen in de resource bar
+		int padding = 7;
+		int buttonWidth = ORDERS_BAR_WIDTH - 2 * padding - SCROLL_BAR_WIDTH;
+		int buttonHeight = RESOURCE_BAR_HEIGHT - 2 * padding;
+		int leftPos = Screen.width - ORDERS_BAR_WIDTH / 2 - buttonWidth / 2 + SCROLL_BAR_WIDTH / 2;
+		Rect menuButtonPosition = new Rect(leftPos, padding, buttonWidth, buttonHeight);
+		
+		if(GUI.Button(menuButtonPosition, "Menu")) {
+			Time.timeScale = 0.0f;
+			PauseMenu pauseMenu = GetComponent< PauseMenu >();
+			if(pauseMenu) pauseMenu.enabled = true;
+			UserInput userInput = player.GetComponent< UserInput >();
+			if(userInput) userInput.enabled = false;
+		}
+
 		GUI.EndGroup();
 	}
 
@@ -366,5 +392,9 @@ public class HUD : MonoBehaviour {
 
 	public CursorState GetCursorState() {
 		return activeCursorState;
+	}
+
+	private void PlayClick() {
+		if(audioElement != null) audioElement.Play(clickSound);
 	}
 }

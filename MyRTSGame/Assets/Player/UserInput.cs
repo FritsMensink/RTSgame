@@ -70,7 +70,7 @@ public class UserInput : MonoBehaviour {
 			movement.z -= ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanDown);
 			mouseScroll = true;
-		} else if(ypos <= Screen.height && ypos > Screen.height - ResourceManager.ScrollWidth - 40) {
+		} else if(ypos <= Screen.height && ypos > Screen.height - ResourceManager.ScrollWidth + 5) {
 			movement.z += ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanUp);
 			mouseScroll = true;

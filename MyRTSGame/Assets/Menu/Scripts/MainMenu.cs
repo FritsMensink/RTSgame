@@ -9,6 +9,7 @@ public class MainMenu : Menu {
 	}
 	
 	protected override void HandleButton (string text) {
+		base.HandleButton(text);
 		switch(text) {
 		case "New Game": NewGame(); break;
 		case "Exit Game": ExitGame(); break;
