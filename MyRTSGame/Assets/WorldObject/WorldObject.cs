@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using RTS;
@@ -37,7 +38,13 @@ public class WorldObject : MonoBehaviour {
 	public float weaponRechargeTime = 1.0f;
 	private float currentWeaponChargeTime;
 	public float weaponAimSpeed = 1.0f;
-	Rect selectBox;
+	public Rect selectBox;
+
+	public AudioClip attackSound, selectSound, useWeaponSound;
+	public float attackVolume = 1.0f, selectVolume = 1.0f, useWeaponVolume = 1.0f;
+	
+	protected AudioElement audioElement;
+
 	protected virtual void Awake() {
 
 		selectionBounds = ResourceManager.InvalidBounds;
@@ -50,19 +57,22 @@ public class WorldObject : MonoBehaviour {
 		if (player) {
 			SetTeamColor ();
 		}
+
+		InitialiseAudio();
 	}
 
 	// Update is called once per frame
 	protected virtual void Update () {
 
-		selectionBounds = ResourceManager.InvalidBounds;
-		CalculateBounds ();
-		selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
+		//selectionBounds = ResourceManager.InvalidBounds;
+		//CalculateBounds ();
+		//selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
 		//zorg er voor dat het wapen geladen word en er mogelijk aangevallen kan worden.
 		currentWeaponChargeTime += Time.deltaTime;
 		if (attacking && !movingIntoPosition && !aiming) {
 			PerformAttack ();
 		}
+
 		//als de unit niet geselecteerd is, haal dan de units scherm positie op
 		if (!currentlySelected) {
 			//haal de scherm positie op
@@ -88,23 +98,42 @@ public class WorldObject : MonoBehaviour {
 
 	protected virtual void OnGUI() {
 
-		if (currentlySelected) {
-			DrawSelection(selectBox);
+		if (currentlySelected && !ResourceManager.MenuOpen) {
+			DrawSelection ();
+		} else {
+			DrawDefaultVisibleHealthBar();
 		}
 	}
 
-	private void DrawSelection(Rect selectBox) {
-		GUI.skin = ResourceManager.SelectionBoxSkin;
-		GUI.color = Color.yellow;
-		//Rect selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
-		//Teken de selectie box om het huidige geselecteerde object, die zich binnen het speel veld bevind.
-		GUI.BeginGroup (playingArea);
-		DrawSelectionBox (selectBox);
-		GUI.EndGroup ();
+	private void DrawDefaultVisibleHealthBar() {
+				
+		//als het wereldobject niet van een speler is (niet van ai of speler)
+		//word de playing area niet gezet voor het object waardoor
+		//de healthbar niet getekend wordt zonder dat het object geselecteerd is.
+		if (player) {
+			this.playingArea = player.hud.GetPlayingArea ();
+				
+			Rect selectBox = WorkManager.CalculateSelectionBox (selectionBounds, playingArea);
+			//Draw the selection box around the currently selected object, within the bounds of the playing area
+			GUI.BeginGroup (playingArea);
+			CalculateCurrentHealth (0.35f, 0.65f);
+			DrawHealthBar (selectBox, "");
+			GUI.EndGroup ();
+		}
 	}
 
-	public void SetPlayer() {
-		player = transform.root.GetComponentInChildren< Player >();
+	private void DrawSelection() {
+		GUI.skin = ResourceManager.SelectionBoxSkin;
+
+		//als het wereldobject niet van een speler is (niet van ai of speler)
+		//word de playing area niet gezet voor het object waardoor
+		//de healthbar niet getekend wordt zonder dat het object geselecteerd is.
+
+		Rect selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
+		//Draw the selection box around the currently selected object, within the bounds of the playing area
+		GUI.BeginGroup(playingArea);
+		DrawSelectionBox(selectBox);
+		GUI.EndGroup();
 	}
 
 	protected virtual void DrawSelectionBox(Rect selectBox) {
@@ -113,9 +142,17 @@ public class WorldObject : MonoBehaviour {
 		DrawHealthBar(selectBox, "");
 	}
 
+	public void SetPlayer() {
+		player = transform.root.GetComponentInChildren< Player >();
+	}
+
 	public virtual void SetSelection(bool selected, Rect playingArea) {
 		currentlySelected = selected;
-		if(selected) this.playingArea = playingArea;
+		if (selected) {
+			this.playingArea = playingArea;
+
+			if(audioElement != null) audioElement.Play(selectSound);
+		}
 	}
 
 	public bool GetCurrentlySelected() {
@@ -176,32 +213,46 @@ public class WorldObject : MonoBehaviour {
 	public virtual void MouseClick(GameObject hitObject, Vector3 hitPoint, Player controller){
 		//Ga alleen iets doen met de muisclick als er op dit moment iets geselecteerd is.
 		if (currentlySelected && hitObject && hitObject.name != "Terrain") {
-			WorldObject worldObject = hitObject.transform.parent.GetComponent< WorldObject > ();
+			WorldObject worldObject = hitObject.transform.GetComponent< WorldObject > ();
 			//clicked on another selectable object
 			if (worldObject) {
 				Player owner = hitObject.transform.root.GetComponent< Player > ();
-				if (owner) { //the object is controlled by a player
+				if (owner) { //the object is controlled by a player or ai
 					if (player && player.humanControlled) { //this object is controlled by a human player
 						//start attack if object is not owned by the same player and this object can attack, else select
-						if (player.username != owner.username && CanAttack ())
+						if (player.username != owner.username && CanAttack ()) {
 							BeginAttack (worldObject);
-	
+						}
 					}
 				}
 			}
 		}
 	}
 
-	protected virtual void BeginAttack(WorldObject target) {
-		this.target = target;
-		if (TargetInRange ()) {
-			attacking = true;
-			PerformAttack ();
-		} else { 
-			AdjustPosition ();
-		}
+	public void TakeDamage(int damage) {
+		hitPoints -= damage;
+		if(hitPoints<=0) Destroy(gameObject);
 	}
 
+	private void BeginAttack(WorldObject target) {
+		if(audioElement != null) audioElement.Play(attackSound);
+		this.target = target;
+		if(TargetInRange()) {
+			attacking = true;
+			PerformAttack();
+		} else AdjustPosition();
+	}
+	
+	private void PerformAttack() {
+		if(!target) {
+			attacking = false;
+			return;
+		}
+		if(!TargetInRange()) AdjustPosition();
+		else if(!TargetInFrontOfWeapon()) AimAtTarget();
+		else if(ReadyToFire()) UseWeapon();
+	}
+	
 	private bool TargetInRange() {
 		Vector3 targetLocation = target.transform.position;
 		Vector3 direction = targetLocation - transform.position;
@@ -211,9 +262,33 @@ public class WorldObject : MonoBehaviour {
 		return false;
 	}
 
+	protected virtual void UseWeapon() {
+		if(audioElement != null && Time.timeScale > 0) audioElement.Play(useWeaponSound);
+		currentWeaponChargeTime = 0.0f;
+		//this behaviour needs to be specified by a specific object
+	}
+
+	protected virtual void AimAtTarget() {
+		aiming = true;
+		//this behaviour needs to be specified by a specific object
+	}
+	
+	private bool TargetInFrontOfWeapon() {
+		Vector3 targetLocation = target.transform.position;
+		Vector3 direction = targetLocation - transform.position;
+		if(direction.normalized == transform.forward.normalized) return true;
+		else return false;
+	}
+	
+	private Vector3 FindNearestAttackPosition() {
+		Vector3 targetLocation = target.transform.position;
+		Vector3 direction = targetLocation - transform.position;
+		float targetDistance = direction.magnitude;
+		float distanceToTravel = targetDistance - (0.9f * weaponRange);
+		return Vector3.Lerp(transform.position, targetLocation, distanceToTravel / targetDistance);
+	}
+	
 	private void AdjustPosition() {
-		//het enige object wat kan bewegen op dit moment is een unit
-		//als het dus geen unit is annuleren we aanval
 		Unit self = this as Unit;
 		if(self) {
 			movingIntoPosition = true;
@@ -222,63 +297,10 @@ public class WorldObject : MonoBehaviour {
 			attacking = true;
 		} else attacking = false;
 	}
-
-	private Vector3 FindNearestAttackPosition() {
-		Vector3 targetLocation = target.transform.position;
-		Vector3 direction = targetLocation - transform.position;
-		float targetDistance = direction.magnitude;
-		float distanceToTravel = targetDistance - (0.9f * weaponRange);
-		return Vector3.Lerp(transform.position, targetLocation, distanceToTravel / targetDistance);
-	}
-
-	private void PerformAttack() {
-		if(!target) {
-			attacking = false;
-			return;
-		}
-		if (!TargetInRange ()) {
-			AdjustPosition ();
-		} else if (!TargetInFrontOfWeapon ()) {
-			AimAtTarget ();
-		} else if (ReadyToFire ()) {
-			UseWeapon ();
-		}
-	}
-
-	//in deze methode gaan we er van uit dat het wapen altijd aan de voorkant van het world object zich bevind
-	//specifeke gevallen kunnen deze methode overriden.
-	protected virtual bool TargetInFrontOfWeapon() {
-		Vector3 targetLocation = target.transform.position;
-		Vector3 direction = targetLocation - transform.position;
-		if(direction.normalized == transform.forward.normalized) return true;
-		else return false;
-	}
-
+	
 	private bool ReadyToFire() {
 		if(currentWeaponChargeTime >= weaponRechargeTime) return true;
 		return false;
-	}
-
-	protected virtual void AimAtTarget() {
-		aiming = true;
-		//this behaviour needs to be specified by a specific object
-	}
-
-	protected virtual void UseWeapon() {
-		//reset de huidige weapon charge time naar 0 zodat het wapen moet herladen.
-		currentWeaponChargeTime = 0.0f;
-		//this behaviour needs to be specified by a specific object
-	}
-
-	public void TakeDamage(int damage) {
-		hitPoints -= damage;
-		if (hitPoints <= 0) {
-			if (UserInput.GetFirstSelectedWorldObject() == this) {
-			this.currentlySelected = false;
-			UserInput.CurrentlySelectedWorldObjects[0] = null;
-			}
-			Destroy (gameObject);
-		}
 	}
 
 	protected virtual void CalculateCurrentHealth(float lowSplit, float highSplit) {
@@ -328,5 +350,23 @@ public class WorldObject : MonoBehaviour {
 	protected void SetTeamColor() {
 		TeamColor[] teamColors = GetComponentsInChildren< TeamColor >();
 		foreach(TeamColor teamColor in teamColors) teamColor.renderer.material.color = player.teamColor;
+	}
+
+	protected virtual void InitialiseAudio() {
+		List< AudioClip > sounds = new List< AudioClip >();
+		List< float > volumes = new List< float >();
+		if(attackVolume < 0.0f) attackVolume = 0.0f;
+		if(attackVolume > 1.0f) attackVolume = 1.0f;
+		sounds.Add(attackSound);
+		volumes.Add(attackVolume);
+		if(selectVolume < 0.0f) selectVolume = 0.0f;
+		if(selectVolume > 1.0f) selectVolume = 1.0f;
+		sounds.Add(selectSound);
+		volumes.Add(selectVolume);
+		if(useWeaponVolume < 0.0f) useWeaponVolume = 0.0f;
+		if(useWeaponVolume > 1.0f) useWeaponVolume = 1.0f;
+		sounds.Add(useWeaponSound);
+		volumes.Add(useWeaponVolume);
+		audioElement = new AudioElement(sounds, volumes, objectName, this.transform);
 	}
 }

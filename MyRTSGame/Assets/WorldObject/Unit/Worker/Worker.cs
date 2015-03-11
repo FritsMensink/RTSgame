@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using RTS;
+using System.Collections.Generic;
 
 public class Worker : Unit {
 	
@@ -7,7 +9,10 @@ public class Worker : Unit {
 	private Building currentProject;
 	private bool building = false;
 	private float amountBuilt = 0.0f;
-	
+
+	public AudioClip finishedJobSound;
+	public float finishedJobVolume = 1.0f;
+
 	/*** Game Engine methods, all can be overridden by subclass ***/
 	
 	protected override void Start () {
@@ -25,7 +30,10 @@ public class Worker : Unit {
 				if(amount > 0) {
 					amountBuilt -= amount;
 					currentProject.Construct(amount);
-					if(!currentProject.UnderConstruction()) building = false;
+					if(!currentProject.UnderConstruction()) {
+						building = false;
+						if(audioElement != null) audioElement.Play(finishedJobSound);
+					}
 				}
 			}
 		}
@@ -69,6 +77,17 @@ public class Worker : Unit {
 	private void CreateBuilding(string buildingName) {
 		Vector3 buildPoint = new Vector3(transform.position.x, transform.position.y, transform.position.z + 10);
 		if(player) player.CreateBuilding(buildingName, buildPoint, this, playingArea);
+	}
+
+	protected override void InitialiseAudio () {
+		base.InitialiseAudio ();
+		if(finishedJobVolume < 0.0f) finishedJobVolume = 0.0f;
+		if(finishedJobVolume > 1.0f) finishedJobVolume = 1.0f;
+		List< AudioClip > sounds = new List< AudioClip >();
+		List< float > volumes = new List< float >();
+		sounds.Add(finishedJobSound);
+		volumes.Add (finishedJobVolume);
+		audioElement.Add(sounds, volumes);
 	}
 
 }

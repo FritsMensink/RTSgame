@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using RTS;
 
 	public class Unit : WorldObject {
@@ -20,6 +21,9 @@ using RTS;
 	protected Quaternion targetRotation;
 
 	private GameObject destinationTarget;
+	public AudioClip driveSound, moveSound;
+	public float driveVolume = 0.5f, moveVolume = 1.0f;
+
 		/*** Game Engine methods, all can be overridden by subclass ***/
 		
 	protected override void Awake() {
@@ -55,6 +59,7 @@ using RTS;
 	}
 
 	public override void MouseClick(GameObject hitObject, Vector3 hitPoint, Player controller) {
+		Debug.Log ("Mouse click unit!");
 		base.MouseClick(hitObject, hitPoint, controller);
 		//only handle input if owned by a human player and currently selected
 		if(player && player.humanControlled && currentlySelected) {
@@ -71,11 +76,13 @@ using RTS;
 	}
 
 	public virtual void StartMove(Vector3 destination) {
+		if(audioElement != null) audioElement.Play (moveSound);
 		this.destination = destination;
 		destinationTarget = null;
 		targetRotation = Quaternion.LookRotation (destination - transform.position);
 		rotating = true;
 		moving = false;
+		attacking = false;
 	}
 
 	public virtual void StartMove(Vector3 destination, GameObject destinationTarget) {
@@ -88,27 +95,41 @@ using RTS;
 		if (transform.position == destination) {
 			moving = false;
 			movingIntoPosition = false;
+			if(audioElement != null) { audioElement.Stop(driveSound); }
 		}
 		CalculateBounds();
 	}
 
 	private void TurnToTarget() {
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed);
+		CalculateBounds();
 		//sometimes it gets stuck exactly 180 degrees out in the calculation and does nothing, this check fixes that
 		Quaternion inverseTargetRotation = new Quaternion(-targetRotation.x, -targetRotation.y, -targetRotation.z, -targetRotation.w);
-		CalculateBounds();
-		if (transform.rotation == targetRotation || transform.rotation == inverseTargetRotation) {
+		if(transform.rotation == targetRotation || transform.rotation == inverseTargetRotation) {
 			rotating = false;
 			moving = true;
-		
-			if (destinationTarget) {
-				CalculateTargetDestination ();
-			}
+			if(destinationTarget) CalculateTargetDestination();
+			if(audioElement != null) audioElement.Play(driveSound);
 		}
 	}
 
 	public virtual void SetBuilding(Building creator) {
 		//specific initialization for a unit can be specified here
+	}
+
+	protected override void InitialiseAudio () {
+		base.InitialiseAudio ();
+		List< AudioClip > sounds = new List< AudioClip >();
+		List< float > volumes = new List< float >();
+		if(driveVolume < 0.0f) driveVolume = 0.0f;
+		if(driveVolume > 1.0f) driveVolume = 1.0f;
+		volumes.Add(driveVolume);
+		sounds.Add(driveSound);
+		if(moveVolume < 0.0f) moveVolume = 0.0f;
+		if(moveVolume > 1.0f) moveVolume = 1.0f;
+		sounds.Add(moveSound);
+		volumes.Add(moveVolume);
+		audioElement.Add(sounds, volumes);
 	}
 
 	private void CalculateTargetDestination() {

@@ -11,7 +11,7 @@ public class UserInput : MonoBehaviour {
 	
 	RaycastHit hit;
 	private Player player;
-	
+
 	public static Vector3 RightClickPoint;
 	public static ArrayList CurrentlySelectedWorldObjects = new ArrayList(); // of gameGameObject
 	public static ArrayList WorldObjectsOnScreen = new ArrayList (); // of Gameobject
@@ -144,14 +144,14 @@ public class UserInput : MonoBehaviour {
 			
 				// Store where clicked
 				if (Input.GetMouseButtonDown (0) && player.hud.MouseInBounds ()) {
-					if(player.hud.MouseInBounds() && !Input.GetKey(KeyCode.LeftAlt) && GetFirstSelectedWorldObject() != null) {
+//					if(player.hud.MouseInBounds() && !Input.GetKey(KeyCode.LeftAlt) && GetFirstSelectedWorldObject() != null) {
 						if(player.IsFindingBuildingLocation()) {
-							player.CancelBuildingPlacement();
-						} else {
-							GetFirstSelectedWorldObject().SetSelection(false, player.hud.GetPlayingArea());
-							CurrentlySelectedWorldObjects.Remove(GetFirstSelectedWorldObject());
-						}
-					}
+						player.CancelBuildingPlacement();
+						} //else {
+//							GetFirstSelectedWorldObject().SetSelection(false, player.hud.GetPlayingArea());
+//							CurrentlySelectedWorldObjects.Remove(GetFirstSelectedWorldObject());
+//						}
+//					}
 					mouseDownPoint = hit.point;
 					TimeLeftBeforeDeclareDrag = TimeLimitBeforeDeclareDrag;
 					MouseDragStart = Input.mousePosition;
@@ -182,14 +182,14 @@ public class UserInput : MonoBehaviour {
 						if (CurrentlySelectedWorldObjects.Count > 0) {
 							if(player.IsFindingBuildingLocation()) {
 								if(player.CanPlaceBuilding()) {
-
 									player.StartConstruction();
 								}
 							} 
 							else {
 								foreach (GameObject currentlySelectedWorldObject in CurrentlySelectedWorldObjects) {
-									if (currentlySelectedWorldObject != null && hit.collider.gameObject != null)
+									if (currentlySelectedWorldObject != null && hit.collider.gameObject != null) {
 								currentlySelectedWorldObject.GetComponent<WorldObject> ().MouseClick (hit.collider.gameObject, hit.point, player);
+									}
 								}
 							}
 						}

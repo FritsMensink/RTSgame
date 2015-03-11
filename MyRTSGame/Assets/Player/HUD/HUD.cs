@@ -263,6 +263,7 @@ public class HUD : MonoBehaviour {
 		Rect menuButtonPosition = new Rect(leftPos, padding, buttonWidth, buttonHeight);
 		
 		if(GUI.Button(menuButtonPosition, "Menu")) {
+			PlayClick();
 			Time.timeScale = 0.0f;
 			PauseMenu pauseMenu = GetComponent< PauseMenu >();
 			if(pauseMenu) pauseMenu.enabled = true;
@@ -304,6 +305,7 @@ public class HUD : MonoBehaviour {
 						if(player.IsFindingBuildingLocation()) {
 							player.CancelBuildingPlacement();
 						}
+						PlayClick();
 						UserInput.GetFirstSelectedWorldObject().PerformAction(actions[i]);
 					}
 				}
@@ -367,6 +369,7 @@ public class HUD : MonoBehaviour {
 
 			if(GUI.Button(new Rect(leftPos, topPos, width, height), building.sellImage)) {
 				building.Sell();
+				PlayClick();
 			}
 
 			//voor de volgende knop goed te positioneren naast de oude
@@ -376,6 +379,7 @@ public class HUD : MonoBehaviour {
 				if(activeCursorState != CursorState.RallyPoint && previousCursorState != CursorState.RallyPoint) 
 				{
 					SetCursorState(CursorState.RallyPoint);
+					PlayClick();
 				}
 				else {
 					//dirty hack to ensure toggle between RallyPoint and not works ...
@@ -395,6 +399,8 @@ public class HUD : MonoBehaviour {
 	}
 
 	private void PlayClick() {
-		if(audioElement != null) audioElement.Play(clickSound);
+		if (audioElement != null) {
+			audioElement.Play (clickSound);
+		}
 	}
 }
