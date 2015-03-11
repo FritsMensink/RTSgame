@@ -130,7 +130,10 @@ public class UserInput : MonoBehaviour {
 	{
 
 		if (player.humanControlled) {
-			
+
+			if (Input.GetKeyDown(KeyCode.Escape)) {
+				OpenPauseMenu ();
+		}
 			MoveCamera ();
 			RotateCamera ();
 
@@ -606,6 +609,14 @@ public class UserInput : MonoBehaviour {
 			return firstSelectedWorldObject;
 		} else
 			return null;
+	}
+
+	private void OpenPauseMenu() {
+		Time.timeScale = 0.0f;
+		GetComponentInChildren< PauseMenu >().enabled = true;
+		GetComponent< UserInput >().enabled = false;
+		Screen.showCursor = true;
+		ResourceManager.MenuOpen = true;
 	}
 	#endregion
 	
