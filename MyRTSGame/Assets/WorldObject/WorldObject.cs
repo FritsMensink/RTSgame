@@ -37,7 +37,7 @@ public class WorldObject : MonoBehaviour {
 	public float weaponRechargeTime = 1.0f;
 	private float currentWeaponChargeTime;
 	public float weaponAimSpeed = 1.0f;
-
+	Rect selectBox;
 	protected virtual void Awake() {
 
 		selectionBounds = ResourceManager.InvalidBounds;
@@ -55,6 +55,9 @@ public class WorldObject : MonoBehaviour {
 	// Update is called once per frame
 	protected virtual void Update () {
 
+		selectionBounds = ResourceManager.InvalidBounds;
+		CalculateBounds ();
+		selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
 		//zorg er voor dat het wapen geladen word en er mogelijk aangevallen kan worden.
 		currentWeaponChargeTime += Time.deltaTime;
 		if (attacking && !movingIntoPosition && !aiming) {
@@ -64,7 +67,7 @@ public class WorldObject : MonoBehaviour {
 		if (!currentlySelected) {
 			//haal de scherm positie op
 			ScreenPos = Camera.main.WorldToScreenPoint (this.transform.position);
-
+			//
 			//als de unit binnen het scherm zit
 			if (UserInput.UnitWithinScreenSpace (ScreenPos)) {
 				//en niet al toegevoegd is aan UnitsOnScreen, voeg hem dan er aan toe.
@@ -86,14 +89,14 @@ public class WorldObject : MonoBehaviour {
 	protected virtual void OnGUI() {
 
 		if (currentlySelected) {
-			DrawSelection();
+			DrawSelection(selectBox);
 		}
 	}
 
-	private void DrawSelection() {
+	private void DrawSelection(Rect selectBox) {
 		GUI.skin = ResourceManager.SelectionBoxSkin;
 		GUI.color = Color.yellow;
-		Rect selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
+		//Rect selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
 		//Teken de selectie box om het huidige geselecteerde object, die zich binnen het speel veld bevind.
 		GUI.BeginGroup (playingArea);
 		DrawSelectionBox (selectBox);

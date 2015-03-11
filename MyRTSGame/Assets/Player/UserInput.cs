@@ -59,18 +59,18 @@ public class UserInput : MonoBehaviour {
 			movement.x -= ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanLeft);
 			mouseScroll = true;
-		} else if(xpos <= Screen.width && xpos > Screen.width - ResourceManager.ScrollWidth) {
+		} else if(xpos <= Screen.width && xpos > Screen.width - ResourceManager.ScrollWidth - 10) {
 			movement.x += ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanRight);
 			mouseScroll = true;
 		}
-		
+
 		//verticale camera beweging
 		if(ypos >= 0 && ypos < ResourceManager.ScrollWidth) {
 			movement.z -= ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanDown);
 			mouseScroll = true;
-		} else if(ypos <= Screen.height && ypos > Screen.height - ResourceManager.ScrollWidth) {
+		} else if(ypos <= Screen.height && ypos > Screen.height - ResourceManager.ScrollWidth - 40) {
 			movement.z += ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanUp);
 			mouseScroll = true;
@@ -159,7 +159,7 @@ public class UserInput : MonoBehaviour {
 					if (!UserIsDragging) {
 						// Test to see if the user is draggin
 						TimeLeftBeforeDeclareDrag -= Time.deltaTime;
-						if (TimeLeftBeforeDeclareDrag <= 0.0f || UserDraggingByPosition (MouseDragStart, Input.mousePosition))
+						if (UserDraggingByPosition (MouseDragStart, Input.mousePosition))
 						{
 							UserIsDragging = true;
 						}
@@ -178,7 +178,10 @@ public class UserInput : MonoBehaviour {
 					if (Input.GetMouseButtonUp (1)) {
 						if (CurrentlySelectedWorldObjects.Count > 0) {
 							if(player.IsFindingBuildingLocation()) {
-								if(player.CanPlaceBuilding()) player.StartConstruction();
+								if(player.CanPlaceBuilding()) {
+
+									player.StartConstruction();
+								}
 							} 
 							else {
 								foreach (GameObject currentlySelectedWorldObject in CurrentlySelectedWorldObjects) {
@@ -189,6 +192,7 @@ public class UserInput : MonoBehaviour {
 						}
 					}	
 					// Is it terrain?  
+					//print (hit.collider.name);
 					if (hit.collider.name == "Terrain") {
 						// right clicking creates target model if so spawn pointer
 						if (Input.GetMouseButtonDown (1)) {  
@@ -199,8 +203,10 @@ public class UserInput : MonoBehaviour {
 					
 						} else if (Input.GetMouseButtonUp (0) && DidUserClickLeftMouse (mouseDownPoint)) {
 
-							if (!ShiftKeysDown ())
+							if (!ShiftKeysDown ()){
 								DeselectGameobjectsIfSelected ();
+							}
+								
 						}
 					} // end of terrain
 				else {
@@ -267,7 +273,7 @@ public class UserInput : MonoBehaviour {
 						boxHeight = Camera.main.WorldToScreenPoint (mouseDownPoint).y - Camera.main.WorldToScreenPoint (currentMousePoint).y;
 						boxLeft = Input.mousePosition.x;
 						boxTop = (Screen.height - Input.mousePosition.y) - boxHeight;
-			
+
 						if (FloatToBool (boxWidth))
 						if (FloatToBool (boxHeight))
 							boxStart = new Vector2 (Input.mousePosition.x, Input.mousePosition.y + boxHeight);
