@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using RTS;
+using System;
 
 public class WorldObject : MonoBehaviour {
 
@@ -38,6 +39,8 @@ public class WorldObject : MonoBehaviour {
 	private float currentWeaponChargeTime;
 	public float weaponAimSpeed = 1.0f;
 	Rect selectBox;
+	//EditFogOfWarTex EditFogOfWarTex;
+
 	protected virtual void Awake() {
 
 		selectionBounds = ResourceManager.InvalidBounds;
@@ -46,6 +49,7 @@ public class WorldObject : MonoBehaviour {
 	// Use this for initialization
 	protected virtual void Start () {
 		SetPlayer ();
+		//EditFogOfWarTex  = (EditFogOfWarTex) GameObject.Find("FogOfWar").GetComponent(typeof(EditFogOfWarTex));
 
 		if (player) {
 			SetTeamColor ();
@@ -54,6 +58,7 @@ public class WorldObject : MonoBehaviour {
 
 	// Update is called once per frame
 	protected virtual void Update () {
+		//EditFogOfWarTex.drawCircle((int)Math.Ceiling(transform.position.x),(int)Math.Ceiling(transform.position.z),200);
 
 		selectionBounds = ResourceManager.InvalidBounds;
 		CalculateBounds ();
