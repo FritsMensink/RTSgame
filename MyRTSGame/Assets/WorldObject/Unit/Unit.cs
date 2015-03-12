@@ -11,6 +11,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using RTS;
+using System;
 
 	public class Unit : WorldObject {
 		
@@ -32,10 +33,24 @@ using RTS;
 	
 	protected override void Start () {
 		base.Start();
+		if (player.humanControlled) {
+			EditFogOfWarTex.drawCircle ((int)Math.Ceiling (transform.position.x), (int)Math.Ceiling (transform.position.z), visiblerange);
+		}
 	}
 	
 	protected override void Update () {
 		base.Update();
+		curPos = transform.position;
+		if(curPos != lastPos) {
+			selectionBounds = ResourceManager.InvalidBounds;
+			CalculateBounds ();
+			if(this.visiblerange!=0 && player){
+				if(player.humanControlled){
+					EditFogOfWarTex.drawCircle ((int)Math.Ceiling (transform.position.x), (int)Math.Ceiling (transform.position.z), visiblerange);
+				}
+			}
+		}
+		lastPos = curPos;
 		if (rotating) {
 			TurnToTarget ();
 		} else if (moving) {

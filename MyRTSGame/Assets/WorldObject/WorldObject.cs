@@ -8,7 +8,7 @@ public class WorldObject : MonoBehaviour {
 
 	public string objectName;
 	public Texture2D buildImage;
-	public int cost, sellValue, hitPoints, maxHitPoints;
+	public int cost, sellValue, hitPoints, maxHitPoints, visiblerange;
 
 	protected Player player;
 	protected string[] actions = {};
@@ -38,8 +38,13 @@ public class WorldObject : MonoBehaviour {
 	public float weaponRechargeTime = 1.0f;
 	private float currentWeaponChargeTime;
 	public float weaponAimSpeed = 1.0f;
+//fogofwar
+	public EditFogOfWarTex EditFogOfWarTex;
+	protected Vector3 curPos;
+	protected Vector3 lastPos;
+	//selection
 	public Rect selectBox;
-
+//audio
 	public AudioClip attackSound, selectSound, useWeaponSound;
 	public float attackVolume = 1.0f, selectVolume = 1.0f, useWeaponVolume = 1.0f;
 	
@@ -49,6 +54,7 @@ public class WorldObject : MonoBehaviour {
 
 		selectionBounds = ResourceManager.InvalidBounds;
 		CalculateBounds ();
+		EditFogOfWarTex = (EditFogOfWarTex)GameObject.Find ("FogOfWar").GetComponent (typeof(EditFogOfWarTex));
 	}
 	// Use this for initialization
 	protected virtual void Start () {

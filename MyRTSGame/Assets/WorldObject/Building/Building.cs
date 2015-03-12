@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using RTS;
+using System;
 
 public class Building : WorldObject {
 
@@ -163,6 +164,9 @@ public class Building : WorldObject {
 			needsBuilding = false;
 			RestoreMaterials();
 			SetTeamColor();
+			if (player.humanControlled){
+				EditFogOfWarTex.drawCircle ((int)Math.Ceiling (transform.position.x), (int)Math.Ceiling (transform.position.z), visiblerange);
+			}
 		}
 		SetSpawnPoint ();
 	}
