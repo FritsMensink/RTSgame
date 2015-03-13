@@ -14,11 +14,10 @@ using RTS;
 using System;
 
 	public class Unit : WorldObject {
-		
-	protected bool moving, rotating;
+
 	public float moveSpeed, rotateSpeed;
 
-	protected Vector3 destination;
+	//protected Vector3 destination;
 	protected Quaternion targetRotation;
 
 	private GameObject destinationTarget;
@@ -74,11 +73,16 @@ using System;
 	}
 
 	public override void MouseClick(GameObject hitObject, Vector3 hitPoint, Player controller) {
-		Debug.Log ("Mouse click unit!");
 		base.MouseClick(hitObject, hitPoint, controller);
 		//only handle input if owned by a human player and currently selected
 		if(player && player.humanControlled && currentlySelected) {
 			if(hitObject.name == "Terrain" && hitPoint != ResourceManager.InvalidPosition) {
+
+				//bij een mouse click op het terrain moet de hp balk van de laaste target verdwijnen.
+				if (target) { 
+					target = null; 
+				} 
+
 				float x = hitPoint.x;
 				//makes sure that the unit stays on top of the surface it is on
 				float y = hitPoint.y + this.transform.position.y;

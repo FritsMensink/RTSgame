@@ -6,6 +6,7 @@ public class MainMenu : Menu {
 	
 	protected override void SetButtons () {
 		buttons = new string[] {"New Game", "Exit Game"};
+		Screen.showCursor = true;
 	}
 	
 	protected override void HandleButton (string text) {

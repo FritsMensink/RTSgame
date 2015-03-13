@@ -8,6 +8,10 @@ public class Tank : Unit {
 
 	protected override void Start () {
 		base.Start ();
+	}
+	
+	protected override void Update () {
+		base.Update();
 		if(aiming) {
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, aimRotation, weaponAimSpeed);
 			CalculateBounds();
@@ -18,19 +22,13 @@ public class Tank : Unit {
 			}
 		}
 	}
-	
-	protected override void Update () {
-		base.Update();
-	}
 
 	public override bool CanAttack() {
 		return true;
 	}
 
 	protected override void AimAtTarget () {
-		Debug.Log ("Aim at target tank!");
 		base.AimAtTarget();
-		Debug.Log ("Aim at target tank! na base!");
 		aimRotation = Quaternion.LookRotation (target.transform.position - transform.position);
 	}
 

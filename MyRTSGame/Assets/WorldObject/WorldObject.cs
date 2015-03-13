@@ -29,6 +29,10 @@ public class WorldObject : MonoBehaviour {
 	protected GUIStyle healthStyle = new GUIStyle();
 	protected float healthPercentage = 1.0f;
 
+	//worldobject
+	protected bool moving, rotating;
+	protected Vector3 destination;
+
 	//aanvallen van worldobjects
 	protected WorldObject target = null;
 	protected bool attacking = false;
@@ -38,13 +42,15 @@ public class WorldObject : MonoBehaviour {
 	public float weaponRechargeTime = 1.0f;
 	private float currentWeaponChargeTime;
 	public float weaponAimSpeed = 1.0f;
-//fogofwar
+
+	//fogofwar
 	public EditFogOfWarTex EditFogOfWarTex;
 	protected Vector3 curPos;
 	protected Vector3 lastPos;
 	//selection
 	public Rect selectBox;
-//audio
+
+	//audio
 	public AudioClip attackSound, selectSound, useWeaponSound;
 	public float attackVolume = 1.0f, selectVolume = 1.0f, useWeaponVolume = 1.0f;
 	
@@ -104,10 +110,14 @@ public class WorldObject : MonoBehaviour {
 
 	protected virtual void OnGUI() {
 
-		if (currentlySelected && !ResourceManager.MenuOpen) {
-			DrawSelection ();
-		} else {
-			DrawDefaultVisibleHealthBar();
+		if (!ResourceManager.MenuOpen) {
+			if (currentlySelected) {
+				DrawSelection ();
+			} 
+		}
+
+		if (target != null) {
+			target.DrawHealthBar();
 		}
 	}
 
@@ -128,24 +138,30 @@ public class WorldObject : MonoBehaviour {
 		}
 	}
 
-	private void DrawSelection() {
-		GUI.skin = ResourceManager.SelectionBoxSkin;
+	public Rect GetSelectionBox() {
+		return WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
+	}
 
-		//als het wereldobject niet van een speler is (niet van ai of speler)
-		//word de playing area niet gezet voor het object waardoor
-		//de healthbar niet getekend wordt zonder dat het object geselecteerd is.
+	public void DrawSelection() {
 
-		Rect selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
-		//Draw the selection box around the currently selected object, within the bounds of the playing area
-		GUI.BeginGroup(playingArea);
-		DrawSelectionBox(selectBox);
-		GUI.EndGroup();
+		if (player) {
+			GUI.skin = ResourceManager.SelectionBoxSkin;
+
+			//als het wereldobject niet van een speler is (niet van ai of speler)
+			//word de playing area niet gezet voor het object waardoor
+			//de healthbar niet getekend wordt zonder dat het object geselecteerd is.
+
+			Rect selectBox = WorkManager.CalculateSelectionBox (selectionBounds, playingArea);
+			//Draw the selection box around the currently selected object, within the bounds of the playing area
+			GUI.BeginGroup (playingArea);
+			DrawSelectionBox (selectBox);
+			DrawHealthBar (selectBox, "");
+			GUI.EndGroup ();
+		}
 	}
 
 	protected virtual void DrawSelectionBox(Rect selectBox) {
 		GUI.Box(selectBox, "");
-		CalculateCurrentHealth(0.35f, 0.65f);
-		DrawHealthBar(selectBox, "");
 	}
 
 	public void SetPlayer() {
@@ -219,7 +235,9 @@ public class WorldObject : MonoBehaviour {
 	public virtual void MouseClick(GameObject hitObject, Vector3 hitPoint, Player controller){
 		//Ga alleen iets doen met de muisclick als er op dit moment iets geselecteerd is.
 		if (currentlySelected && hitObject && hitObject.name != "Terrain") {
+
 			WorldObject worldObject = hitObject.transform.GetComponent< WorldObject > ();
+			target = worldObject;
 			//clicked on another selectable object
 			if (worldObject) {
 				Player owner = hitObject.transform.root.GetComponent< Player > ();
@@ -240,26 +258,40 @@ public class WorldObject : MonoBehaviour {
 		if(hitPoints<=0) Destroy(gameObject);
 	}
 
-	private void BeginAttack(WorldObject target) {
-		if(audioElement != null) audioElement.Play(attackSound);
+	protected void BeginAttack(WorldObject target) {
+		if (audioElement != null) {
+			audioElement.Play (attackSound);
+		}
 		this.target = target;
-		if(TargetInRange()) {
+
+		if (moving) {
+			destination = transform.position;
+		}
+
+		if (TargetInRange ()) {
 			attacking = true;
-			PerformAttack();
-		} else AdjustPosition();
+			PerformAttack ();
+		} else {
+			AdjustPosition ();
+		}
 	}
 	
-	private void PerformAttack() {
+	protected void PerformAttack() {
 		if(!target) {
 			attacking = false;
 			return;
 		}
-		if(!TargetInRange()) AdjustPosition();
-		else if(!TargetInFrontOfWeapon()) AimAtTarget();
-		else if(ReadyToFire()) UseWeapon();
+		if (!TargetInRange ()) {
+			AdjustPosition ();
+		}
+		else if (!TargetInFrontOfWeapon ()) {
+			AimAtTarget ();
+		} else if (ReadyToFire ()) {
+			UseWeapon ();
+		}
 	}
 	
-	private bool TargetInRange() {
+	protected bool TargetInRange() {
 		Vector3 targetLocation = target.transform.position;
 		Vector3 direction = targetLocation - transform.position;
 		if(direction.sqrMagnitude < weaponRange * weaponRange) {
@@ -279,7 +311,7 @@ public class WorldObject : MonoBehaviour {
 		//this behaviour needs to be specified by a specific object
 	}
 	
-	private bool TargetInFrontOfWeapon() {
+	protected bool TargetInFrontOfWeapon() {
 		Vector3 targetLocation = target.transform.position;
 		Vector3 direction = targetLocation - transform.position;
 		if(direction.normalized == transform.forward.normalized) return true;
@@ -294,7 +326,7 @@ public class WorldObject : MonoBehaviour {
 		return Vector3.Lerp(transform.position, targetLocation, distanceToTravel / targetDistance);
 	}
 	
-	private void AdjustPosition() {
+	protected void AdjustPosition() {
 		Unit self = this as Unit;
 		if(self) {
 			movingIntoPosition = true;
@@ -304,7 +336,7 @@ public class WorldObject : MonoBehaviour {
 		} else attacking = false;
 	}
 	
-	private bool ReadyToFire() {
+	protected bool ReadyToFire() {
 		if(currentWeaponChargeTime >= weaponRechargeTime) return true;
 		return false;
 	}
@@ -316,10 +348,23 @@ public class WorldObject : MonoBehaviour {
 		else healthStyle.normal.background = ResourceManager.CriticalTexture;
 	}
 	
-	protected void DrawHealthBar(Rect selectBox, string label) {
+	public void DrawHealthBar(Rect selectBox, string label) {
+		CalculateCurrentHealth(0.35f, 0.65f);
 		healthStyle.padding.top = -20;
 		healthStyle.fontStyle = FontStyle.Bold;
 		GUI.Label(new Rect(selectBox.x, selectBox.y - 7, selectBox.width * healthPercentage, 5), label, healthStyle);
+	}
+
+	public void DrawHealthBar() {
+		if (player) {
+			this.playingArea = player.hud.GetPlayingArea ();
+
+			Rect selectBox = GetSelectionBox ();
+			CalculateCurrentHealth (0.35f, 0.65f);
+			healthStyle.padding.top = -20;
+			healthStyle.fontStyle = FontStyle.Bold;
+			GUI.Label (new Rect (selectBox.x, selectBox.y + 35, selectBox.width * healthPercentage, 5), "", healthStyle);
+		}
 	}
 
 	public Bounds GetSelectionBounds() {
@@ -374,5 +419,12 @@ public class WorldObject : MonoBehaviour {
 		sounds.Add(useWeaponSound);
 		volumes.Add(useWeaponVolume);
 		audioElement = new AudioElement(sounds, volumes, objectName, this.transform);
+	}
+
+	public string GetPlayerUsername() {
+		if (player) {
+			return player.username;
+		}
+		return "";
 	}
 }

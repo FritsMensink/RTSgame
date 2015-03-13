@@ -131,9 +131,10 @@ public class UserInput : MonoBehaviour {
 
 		if (player.humanControlled) {
 
-			if (Input.GetKeyDown(KeyCode.Escape)) {
+			if (Input.GetKeyDown (KeyCode.Escape)) {
 				OpenPauseMenu ();
-		}
+			} else {
+
 			MoveCamera ();
 			RotateCamera ();
 
@@ -145,9 +146,9 @@ public class UserInput : MonoBehaviour {
 				// Store where clicked
 				if (Input.GetMouseButtonDown (0) && player.hud.MouseInBounds ()) {
 //					if(player.hud.MouseInBounds() && !Input.GetKey(KeyCode.LeftAlt) && GetFirstSelectedWorldObject() != null) {
-						if(player.IsFindingBuildingLocation()) {
-						player.CancelBuildingPlacement();
-						} //else {
+					if (player.IsFindingBuildingLocation ()) {
+						player.CancelBuildingPlacement ();
+					} //else {
 //							GetFirstSelectedWorldObject().SetSelection(false, player.hud.GetPlayingArea());
 //							CurrentlySelectedWorldObjects.Remove(GetFirstSelectedWorldObject());
 //						}
@@ -162,8 +163,7 @@ public class UserInput : MonoBehaviour {
 					if (!UserIsDragging) {
 						// Test to see if the user is draggin
 						TimeLeftBeforeDeclareDrag -= Time.deltaTime;
-						if (UserDraggingByPosition (MouseDragStart, Input.mousePosition))
-						{
+						if (UserDraggingByPosition (MouseDragStart, Input.mousePosition)) {
 							UserIsDragging = true;
 						}
 					}
@@ -180,15 +180,14 @@ public class UserInput : MonoBehaviour {
 				
 					if (Input.GetMouseButtonUp (1)) {
 						if (CurrentlySelectedWorldObjects.Count > 0) {
-							if(player.IsFindingBuildingLocation()) {
-								if(player.CanPlaceBuilding()) {
-									player.StartConstruction();
+							if (player.IsFindingBuildingLocation ()) {
+								if (player.CanPlaceBuilding ()) {
+									player.StartConstruction ();
 								}
-							} 
-							else {
+							} else {
 								foreach (GameObject currentlySelectedWorldObject in CurrentlySelectedWorldObjects) {
 									if (currentlySelectedWorldObject != null && hit.collider.gameObject != null) {
-								currentlySelectedWorldObject.GetComponent<WorldObject> ().MouseClick (hit.collider.gameObject, hit.point, player);
+										currentlySelectedWorldObject.GetComponent<WorldObject> ().MouseClick (hit.collider.gameObject, hit.point, player);
 									}
 								}
 							}
@@ -206,7 +205,7 @@ public class UserInput : MonoBehaviour {
 					
 						} else if (Input.GetMouseButtonUp (0) && DidUserClickLeftMouse (mouseDownPoint)) {
 
-							if (!ShiftKeysDown ()){
+							if (!ShiftKeysDown ()) {
 								DeselectGameobjectsIfSelected ();
 							}
 								
@@ -219,7 +218,7 @@ public class UserInput : MonoBehaviour {
 							// Is the user hitting unit? Checks for the Unit Script
 							if (hit.collider.gameObject.GetComponent<WorldObject> ()) {
 								//are we selecting a different object?
-								if (!UnitAlreadyInCurrentlySelectedUnits (hit.collider.gameObject)) {
+								if (player.username == hit.collider.gameObject.GetComponent<WorldObject> ().GetPlayerUsername () && !UnitAlreadyInCurrentlySelectedUnits (hit.collider.gameObject)) {
 									// if shift key not down remove rest of units
 									if (!ShiftKeysDown ()) {
 										DeselectGameobjectsIfSelected ();
@@ -231,14 +230,14 @@ public class UserInput : MonoBehaviour {
 								
 									//change the unit selected value to true
 									hit.collider.gameObject.GetComponent<WorldObject> ().SetSelection (true, player.hud.GetPlayingArea ());
-								} else {
+																		
+								} else if (player.username == hit.collider.gameObject.GetComponent<WorldObject> ().GetPlayerUsername ()) {
 									// unit is already in the currently select units!
 									//remove unit!
-									if (ShiftKeysDown ()){
+									if (ShiftKeysDown ()) {
 										RemoveUnitFromCurrentlySelectedUnits (hit.collider.gameObject);
 										hit.collider.gameObject.GetComponent<WorldObject> ().SetSelection (false, player.hud.GetPlayingArea ());
-									}
-									else {
+									} else {
 										DeselectGameobjectsIfSelected ();
 										//GameObject SelectedObj = hit.collider.transform.FindChild ("Selector").gameObject;
 										//SelectedObj.SetActive (true);
@@ -260,7 +259,7 @@ public class UserInput : MonoBehaviour {
 				} else {
 //					if (Input.GetMouseButtonUp (0) && DidUserClickLeftMouse (mouseDownPoint) && player.hud.MouseInBounds())
 					if (!ShiftKeysDown () && player.hud.MouseInBounds ()) {
-					DeselectGameobjectsIfSelected ();
+						DeselectGameobjectsIfSelected ();
 					}
 //			}//end of raycast
 //		} // end of dragging
@@ -301,6 +300,7 @@ public class UserInput : MonoBehaviour {
 			}// end of update function
 		}
 	}
+	}
 
 	void LateUpdate()
 	{
@@ -312,27 +312,15 @@ public class UserInput : MonoBehaviour {
 			for (int i = 0; i < WorldObjectsOnScreen.Count; i++) {
 				GameObject UnitObj = WorldObjectsOnScreen [i] as GameObject;
 				if (UnitObj) {
-					WorldObject WorldObjectScript = UnitObj.GetComponent<WorldObject> ();
+					WorldObject WorldObject = UnitObj.GetComponent<WorldObject> ();
 					//GameObject SelectedObj = UnitObj.transform.FindChild ("Selector").gameObject;
-				
+					if (WorldObject) {
 					//if not allready in the dragged units
-					if (!UnitAlreadyInDraggedUnits (UnitObj)) {
-						if (UnitInsideDrag (WorldObjectScript.ScreenPos)) {
-							//SelectedObj.SetActive (true);
-							WorldObjectsInDrag.Add (UnitObj);
-							//test in sleepend vakje
-							UnitObj.renderer.material.color = Color.red;
-						}
-					
-					//unit is not in the drag!
-					else {
-							//test niet meer in slepend vakje en ook niet geselecteerd
-							UnitObj.renderer.material.color = Color.white;
-							//remove the selected graphic, if units is not allready in currently selected units
-							//if (!UnitAlreadyInCurrentlySelectedUnits (UnitObj) && !ShiftKeysDown()) { 
-							//SelectedObj.SetActive (false);
-
-							//}
+						if (!UnitAlreadyInDraggedUnits (UnitObj)) {
+							if (UnitInsideDrag (WorldObject.ScreenPos)) {
+								//SelectedObj.SetActive (true);
+								WorldObjectsInDrag.Add (UnitObj);							
+							}
 						}
 					}
 				}
@@ -342,13 +330,11 @@ public class UserInput : MonoBehaviour {
 			FinishDragOnThisFrame = false;
 			PutDraggedUnitsInCurrentlySelectedUnits ();
 		}
-
-		MouseHover ();
 	}
 	
 	void OnGUI()
 	{
-		
+		MouseHover ();
 		//box width, hieght, top, left
 		if(UserIsDragging)
 		{
@@ -379,17 +365,23 @@ public class UserInput : MonoBehaviour {
 						firstSelectedUnit.GetComponent<WorldObject>().SetHoverState(hoverObject);
 					}
 				}
-				else if(hoverObject.name != "Terrain") {
-					Player owner = hoverObject.transform.root.GetComponent< Player >();
-					if(owner) {
-						Unit unit = hoverObject.transform.parent.GetComponent< Unit >();
-						Building building = hoverObject.transform.parent.GetComponent< Building >();
-						if(owner.username == player.username && (unit || building)) player.hud.SetCursorState(CursorState.Select);
+			  if(hoverObject.name != "Terrain") {
+				Player owner = hoverObject.transform.root.GetComponent< Player >();
+				if(owner) {
+					WorldObject worldObject = hoverObject.transform.GetComponent< WorldObject >();
+					if (worldObject) {
+						if (owner.username == player.username) {
+							worldObject.DrawSelection();
+						}
+						else {
+								worldObject.DrawHealthBar();
+								}
+							}
 						}
 					}
 				}
 			}
-		}
+	   }
 	}
 
 	#region Helper functions
@@ -415,34 +407,6 @@ public class UserInput : MonoBehaviour {
 		else
 			return false;
 	}
-
-//	private GameObject FindHitObject() {
-//		//om uit te vinden welk object geraakt is, wordt er gebruik gemaakt van een paar Unity methodes
-//		//De ray is een lijn die loop van waar punt waar de speler klikt en de main camera.
-//		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-//		RaycastHit hit;
-//		//Physics.Raycast() volgt de lijn en kijkt welk object er het eerst geraakt wordt.
-//		//Als het een object find plaats hij hem in de variable hit.
-//		if (Physics.Raycast (ray, out hit)) {
-//			//als hij de variable hit vind returnen we het gameObject 
-//			return hit.collider.gameObject;
-//		}
-//		return null;
-//	}
-//	
-//	private Vector3 FindHitPoint() {
-//		//om uit te vinden welk object geraakt is, wordt er gebruik gemaakt van een paar Unity methodes
-//		//De ray is een lijn die loop van waar punt waar de speler klikt en de main camera.
-//		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-//		RaycastHit hit;
-//		//Physics.Raycast() volgt de lijn en kijkt welk object er het eerst geraakt wordt.
-//		//Als het een object find plaats hij hem in de variable hit.
-//		if (Physics.Raycast (ray, out hit)) {
-//			//als hij de variable hit vind returnen we de positie van hit.
-//			return hit.point;
-//		}
-//		return ResourceManager.InvalidPosition;
-//	}
 
 	// //is de speler aan het slepen met de muis gebaseerd op verandering in de muispositie toen de speler de linker muis knop indrukte
 	public bool UserDraggingByPosition(Vector2 DragStartPoint, Vector2 NewPoint)
@@ -589,23 +553,20 @@ public class UserInput : MonoBehaviour {
 				GameObject UnitObj = WorldObjectsInDrag [i] as GameObject;
 				
 				//als de unit niet al in de currentlySelectedUnits zit, voeg hem dan toe
-				if(!UnitAlreadyInCurrentlySelectedUnits(UnitObj))
+				if(player.username ==  UnitObj.GetComponent<WorldObject> ().GetPlayerUsername() && !UnitAlreadyInCurrentlySelectedUnits(UnitObj))
 				{
 					CurrentlySelectedWorldObjects.Add(UnitObj);
 					UnitObj.GetComponent<WorldObject>().SetSelection(true, player.hud.GetPlayingArea());
 				}
-			}
-			
+			}			
 			WorldObjectsInDrag.Clear();
 		}
 	}
 
 	public static WorldObject GetFirstSelectedWorldObject() {
 		if (CurrentlySelectedWorldObjects.Count > 0 && CurrentlySelectedWorldObjects[0] != null) {
-			//Debug.Log("GetFirt 587");
 			GameObject firstCurrentlySelectedWorldObject = CurrentlySelectedWorldObjects [0] as GameObject;
 			WorldObject firstSelectedWorldObject = firstCurrentlySelectedWorldObject.GetComponent<WorldObject>();
-			//Debug.Log("name:" + firstCurrentlySelectedWorldObject.name);
 			return firstSelectedWorldObject;
 		} else
 			return null;
