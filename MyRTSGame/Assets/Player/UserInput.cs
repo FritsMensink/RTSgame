@@ -44,6 +44,7 @@ public class UserInput : MonoBehaviour {
 	void Start () {
 		//ga naar het root object (player) en zoek naar het Player component dat er al aan hangt (refereerd).
 		player = transform.root.GetComponent<Player> ();
+
 	}			
 
 	private void MoveCamera() {
@@ -55,22 +56,22 @@ public class UserInput : MonoBehaviour {
 		bool mouseScroll = false;
 
 		//Horizontale camera beweging
-		if(xpos >= 0 && xpos < ResourceManager.ScrollWidth) {
+		if(xpos >= 0 && xpos < ResourceManager.ScrollWidth || Input.GetKey(KeyCode.A)) {
 			movement.x -= ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanLeft);
 			mouseScroll = true;
-		} else if(xpos <= Screen.width && xpos > Screen.width - ResourceManager.ScrollWidth - 10) {
+		} else if(xpos <= Screen.width && xpos > Screen.width - ResourceManager.ScrollWidth - 10 || Input.GetKey(KeyCode.D)) {
 			movement.x += ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanRight);
 			mouseScroll = true;
 		}
 
 		//verticale camera beweging
-		if(ypos >= 0 && ypos < ResourceManager.ScrollWidth) {
+		if(ypos >= 0 && ypos < ResourceManager.ScrollWidth || Input.GetKey(KeyCode.S)) {
 			movement.z -= ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanDown);
 			mouseScroll = true;
-		} else if(ypos <= Screen.height && ypos > Screen.height - ResourceManager.ScrollWidth + 5) {
+		} else if(ypos <= Screen.height && ypos > Screen.height - ResourceManager.ScrollWidth + 5 || Input.GetKey(KeyCode.W)) {
 			movement.z += ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanUp);
 			mouseScroll = true;
@@ -395,7 +396,9 @@ public class UserInput : MonoBehaviour {
 	//maak negatief
 	public static float Unsinged(float val)
 	{
-		if (val < 0f) val *= -1;
+		if (val < 0f) {
+			val *= -1;
+		}
 		return val;
 	}
 
@@ -564,12 +567,15 @@ public class UserInput : MonoBehaviour {
 	}
 
 	public static WorldObject GetFirstSelectedWorldObject() {
+		try {
 		if (CurrentlySelectedWorldObjects.Count > 0 && CurrentlySelectedWorldObjects[0] != null) {
 			GameObject firstCurrentlySelectedWorldObject = CurrentlySelectedWorldObjects [0] as GameObject;
 			WorldObject firstSelectedWorldObject = firstCurrentlySelectedWorldObject.GetComponent<WorldObject>();
 			return firstSelectedWorldObject;
-		} else
+		} else {
 			return null;
+			}
+		} catch { return null;}
 	}
 
 	private void OpenPauseMenu() {

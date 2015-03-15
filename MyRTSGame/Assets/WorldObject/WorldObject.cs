@@ -6,6 +6,9 @@ using RTS;
 
 public class WorldObject : MonoBehaviour {
 
+	private static int CurrentObjectId = 0;
+	private int ObjectId = 0;
+
 	public string objectName;
 	public Texture2D buildImage;
 	public int cost, sellValue, hitPoints, maxHitPoints, visiblerange;
@@ -32,6 +35,12 @@ public class WorldObject : MonoBehaviour {
 	//worldobject
 	protected bool moving, rotating;
 	protected Vector3 destination;
+
+	//zelf nadenk vermogen variablen
+	//tijd tussen een beslissing is elke halve seconde
+	private float timeSinceLastDecision = 0.0f, timeBetweenDecisions = 0.1f;
+	public float detectionRange = 10.0f;
+	protected List< WorldObject > nearbyObjects;
 
 	//aanvallen van worldobjects
 	protected WorldObject target = null;
@@ -61,6 +70,8 @@ public class WorldObject : MonoBehaviour {
 		selectionBounds = ResourceManager.InvalidBounds;
 		CalculateBounds ();
 		EditFogOfWarTex = (EditFogOfWarTex)GameObject.Find ("FogOfWar").GetComponent (typeof(EditFogOfWarTex));
+		ObjectId = GenerateNewObjectId ();
+
 	}
 	// Use this for initialization
 	protected virtual void Start () {
@@ -81,6 +92,11 @@ public class WorldObject : MonoBehaviour {
 		//selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
 		//zorg er voor dat het wapen geladen word en er mogelijk aangevallen kan worden.
 		currentWeaponChargeTime += Time.deltaTime;
+
+		if (ShouldMakeDecision ()) {
+			DecideWhatToDo ();
+		}
+
 		if (attacking && !movingIntoPosition && !aiming) {
 			PerformAttack ();
 		}
@@ -143,8 +159,9 @@ public class WorldObject : MonoBehaviour {
 	}
 
 	public void DrawSelection() {
-
 		if (player) {
+			this.playingArea = player.hud.GetPlayingArea ();
+
 			GUI.skin = ResourceManager.SelectionBoxSkin;
 
 			//als het wereldobject niet van een speler is (niet van ai of speler)
@@ -255,7 +272,9 @@ public class WorldObject : MonoBehaviour {
 
 	public void TakeDamage(int damage) {
 		hitPoints -= damage;
-		if(hitPoints<=0) Destroy(gameObject);
+		if (hitPoints <= 0) {
+			Destroy (gameObject);
+		}
 	}
 
 	protected void BeginAttack(WorldObject target) {
@@ -426,5 +445,51 @@ public class WorldObject : MonoBehaviour {
 			return player.username;
 		}
 		return "";
+	}
+
+	/**
+ * A child class should only determine other conditions under which a decision should
+ * not be made. This could be 'harvesting' for a harvester, for example. Alternatively,
+ * an object that never has to make decisions could just return false.
+ */
+	protected virtual bool ShouldMakeDecision() {
+		if(!attacking && !movingIntoPosition && !aiming) {
+			//we are not doing anything at the moment
+			if(timeSinceLastDecision > timeBetweenDecisions) {
+				timeSinceLastDecision = 0.0f;
+				return true;
+			}
+			timeSinceLastDecision += Time.deltaTime;
+		}
+		return false;
+	}
+	
+	protected virtual void DecideWhatToDo() {
+		//determine what should be done by the world object at the current point in time
+		Vector3 currentPosition = transform.position;
+		nearbyObjects = WorkManager.FindNearbyObjects(currentPosition, detectionRange);
+
+		if(CanAttack()) {
+			List< WorldObject > enemyObjects = new List< WorldObject >();
+			foreach(WorldObject nearbyObject in nearbyObjects) {
+				if(nearbyObject.GetPlayer().username != player.username)  { enemyObjects.Add(nearbyObject); }
+
+			}
+			WorldObject closestObject = WorkManager.FindNearestWorldObjectInListToPosition(enemyObjects, currentPosition);
+			if(closestObject) BeginAttack(closestObject);
+		}
+	}
+
+	public Player GetPlayer() {
+		return player;
+	}
+
+	private static  int GenerateNewObjectId() {
+		CurrentObjectId = CurrentObjectId + 1;
+		return CurrentObjectId;
+	}
+
+	public int GetWorldObjectId() {
+		return ObjectId;
 	}
 }

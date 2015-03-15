@@ -56,6 +56,11 @@ public class Worker : Unit {
 		if(doBase) base.MouseClick(hitObject, hitPoint, controller);
 	}
 
+	protected override bool ShouldMakeDecision () {
+		if(building) return false;
+		return base.ShouldMakeDecision();
+	}
+
 	public override void SetBuilding (Building project) {
 		base.SetBuilding (project);
 		currentProject = project;
@@ -90,4 +95,18 @@ public class Worker : Unit {
 		audioElement.Add(sounds, volumes);
 	}
 
+	protected override void DecideWhatToDo () {
+		base.DecideWhatToDo ();
+		List< WorldObject > buildings = new List< WorldObject >();
+		foreach(WorldObject nearbyObject in nearbyObjects) {
+			if(nearbyObject.GetPlayer() != player) continue;
+			Building nearbyBuilding = nearbyObject.GetComponent< Building> ();
+			if(nearbyBuilding && nearbyBuilding.UnderConstruction()) buildings.Add(nearbyObject);
+		}
+		WorldObject nearestObject = WorkManager.FindNearestWorldObjectInListToPosition(buildings, transform.position);
+		if(nearestObject) {
+			Building closestBuilding = nearestObject.GetComponent< Building >();
+			if(closestBuilding) SetBuilding(closestBuilding);
+		}
+	}
 }

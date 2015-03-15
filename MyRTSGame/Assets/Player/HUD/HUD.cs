@@ -56,7 +56,7 @@ public class HUD : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		player = transform.root.GetComponent<Player> ();
-
+		Screen.showCursor = true;
 		
 		ResourceManager.StoreSelectBoxItems(selectBoxSkin, healthy, damaged, critical);
 

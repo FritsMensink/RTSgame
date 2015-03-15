@@ -136,6 +136,11 @@ using System;
 		//specific initialization for a unit can be specified here
 	}
 
+	protected override bool ShouldMakeDecision () {
+		if(moving || rotating) return false;
+		return base.ShouldMakeDecision();
+	}
+
 	protected override void InitialiseAudio () {
 		base.InitialiseAudio ();
 		List< AudioClip > sounds = new List< AudioClip >();

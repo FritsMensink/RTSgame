@@ -75,6 +75,10 @@ public class Building : WorldObject {
 		return currentBuildProgress / maxBuildProgress;
 	}
 
+	protected override bool ShouldMakeDecision () {
+		return false;
+	}
+
 	public override void SetSelection(bool selected, Rect playingArea) {
 		base.SetSelection(selected, playingArea);
 		if(player) {
