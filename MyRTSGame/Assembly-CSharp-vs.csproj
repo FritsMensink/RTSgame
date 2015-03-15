@@ -66,6 +66,7 @@
      <Compile Include="Assets\VictoryConditions\VictoryCondition.cs" />
      <Compile Include="Assets\WorldObject\Building\Building.cs" />
      <Compile Include="Assets\WorldObject\Building\Buildings.cs" />
+     <Compile Include="Assets\WorldObject\Building\OilPump\OilPump.cs" />
      <Compile Include="Assets\WorldObject\Building\WarFactory\WarFactory.cs" />
      <Compile Include="Assets\WorldObject\Projectile.cs" />
      <Compile Include="Assets\WorldObject\TeamColor.cs" />

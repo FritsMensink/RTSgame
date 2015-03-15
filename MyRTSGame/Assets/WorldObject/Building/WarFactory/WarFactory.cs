@@ -12,4 +12,8 @@ public class WarFactory : Building {
 		base.PerformAction(actionToPerform);
 		CreateUnit(actionToPerform);
 	}
+
+	public override bool hasRallyPoint() {
+		return true;
+	}
 }

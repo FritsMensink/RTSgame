@@ -96,7 +96,7 @@ public class Building : WorldObject {
 	}
 
 	public bool hasSpawnPoint() {
-		return spawnPoint != ResourceManager.InvalidPosition && rallyPoint != ResourceManager.InvalidPosition;
+		return spawnPoint != ResourceManager.InvalidPosition && rallyPoint != ResourceManager.InvalidPosition && hasRallyPoint();
 	}
 
 	public override void SetHoverState(GameObject hoverObject) {
@@ -122,14 +122,20 @@ public class Building : WorldObject {
 	}
 
 	public void SetRallyPoint(Vector3 position) {
-		rallyPoint = position;
-		//rallyPoint.x = rallyPoint.x - 5;
-		if (player && player.humanControlled && currentlySelected) {
-			RallyPoint flag = player.GetComponentInChildren< RallyPoint > ();
-			if (flag) {
-				flag.transform.localPosition = rallyPoint;
+		if (hasRallyPoint()) {
+			rallyPoint = position;
+			//rallyPoint.x = rallyPoint.x - 5;
+			if (player && player.humanControlled && currentlySelected) {
+				RallyPoint flag = player.GetComponentInChildren< RallyPoint > ();
+				if (flag) {
+					flag.transform.localPosition = rallyPoint;
+				}
 			}
 		}
+	}
+
+	public virtual bool hasRallyPoint() {
+		return false;
 	}
 
 	public void Sell() {
@@ -176,12 +182,14 @@ public class Building : WorldObject {
 	}
 
 	private void SetSpawnPoint(){
-		
-		float spawnX = selectionBounds.center.x + transform.forward.x*selectionBounds.extents.x + transform.forward.x*2;
-		float spawnZ = selectionBounds.center.z + transform.forward.z*selectionBounds.extents.z + transform.forward.z*2;
-		spawnPoint = new Vector3 (spawnX,0.0f,spawnZ);
-		//set de rally point van het gebouw of de default spawnpoint
-		rallyPoint = spawnPoint;
+
+		if (hasRallyPoint()) {
+			float spawnX = selectionBounds.center.x + transform.forward.x * selectionBounds.extents.x + transform.forward.x * 2;
+			float spawnZ = selectionBounds.center.z + transform.forward.z * selectionBounds.extents.z + transform.forward.z * 2;
+			spawnPoint = new Vector3 (spawnX, 0.0f, spawnZ);
+			//set de rally point van het gebouw of de default spawnpoint
+			rallyPoint = spawnPoint;
+		}
 		
 	}
 
