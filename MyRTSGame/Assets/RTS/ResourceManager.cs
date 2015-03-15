@@ -51,6 +51,7 @@ public static class ResourceManager {
 		public static float Padding { get { return padding; } }
 
 		public static bool MenuOpen { get; set; }
+		public static string LevelName { get; set; }
 
 		public static void StoreSelectBoxItems(GUISkin skin, Texture2D healthy, Texture2D damaged, Texture2D critical) {
 			selectBoxSkin = skin;

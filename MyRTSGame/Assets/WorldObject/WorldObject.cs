@@ -110,13 +110,13 @@ public class WorldObject : MonoBehaviour {
 
 	protected virtual void OnGUI() {
 
-		if (!ResourceManager.MenuOpen) {
+		if (!ResourceManager.MenuOpen && !ResourceManager.MenuOpen) {
 			if (currentlySelected) {
 				DrawSelection ();
 			} 
 		}
 
-		if (target != null) {
+		if (target != null && !ResourceManager.MenuOpen) {
 			target.DrawHealthBar();
 		}
 	}
