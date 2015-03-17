@@ -11,17 +11,18 @@ public class Player : MonoBehaviour {
 	public bool humanControlled;
 	public HUD hud;
 	public AudioClip noMoney, lowPower;
+	public float noMoney_volume =1f, lowPower_volume =1f;
 
 	//Team kleur
 	public Color teamColor;
 
 	//voor het bouwen
 	public Material notAllowedMaterial, allowedMaterial;
-	
+
 	private Building tempBuilding;
 	private Unit tempCreator;
 	private bool findingPlacement = false;
-
+	protected AudioElement audioElement;
 	//public WorldObject SelectedObject { get; set; }
 
 	void Awake() {
@@ -34,6 +35,7 @@ public class Player : MonoBehaviour {
 		hud = GetComponentInChildren<HUD> ();
 		AddStartResourceLimits();
 		AddStartResources();
+		InitialiseAudio();
 	}
 	
 	// Update is called once per frame
@@ -88,6 +90,7 @@ public class Player : MonoBehaviour {
 			}
 		}else{
 			Destroy(newUnit);
+			audioElement.Play(noMoney);
 		}
 	}
 
@@ -160,6 +163,7 @@ public class Player : MonoBehaviour {
 			tempBuilding.StartConstruction ();
 		} else {
 			CancelBuildingPlacement();
+			audioElement.Play(noMoney);
 		}
 
 	}
@@ -181,5 +185,18 @@ public class Player : MonoBehaviour {
 
 	public int GetResourceAmount(ResourceType type) {
 		return resources[type];
+	}
+	protected virtual void InitialiseAudio() {
+		List< AudioClip > sounds = new List< AudioClip >();
+		List< float > volumes = new List< float >();
+		if(noMoney_volume < 0.0f) noMoney_volume = 0.0f;
+		if(noMoney_volume > 1.0f) noMoney_volume = 1.0f;
+		sounds.Add(noMoney);
+		volumes.Add(noMoney_volume);
+		if(lowPower_volume < 0.0f) lowPower_volume = 0.0f;
+		if(lowPower_volume > 1.0f) lowPower_volume = 1.0f;
+		sounds.Add(lowPower);
+		volumes.Add(lowPower_volume);
+		audioElement = new AudioElement(sounds, volumes, username, this.transform);
 	}
 }

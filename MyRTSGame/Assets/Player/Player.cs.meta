@@ -2,7 +2,12 @@ fileFormatVersion: 2
 guid: 5c94d444e9c5dca488aef4892ea01ed7
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - hud: {instanceID: 0}
+  - noMoney: {instanceID: 0}
+  - lowPower: {instanceID: 0}
+  - notAllowedMaterial: {instanceID: 0}
+  - allowedMaterial: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
