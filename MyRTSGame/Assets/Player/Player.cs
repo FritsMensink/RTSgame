@@ -10,6 +10,7 @@ public class Player : MonoBehaviour {
 	private Dictionary< ResourceType, int > resources, resourceLimits;
 	public bool humanControlled;
 	public HUD hud;
+	public AudioClip noMoney, lowPower;
 
 	//Team kleur
 	public Color teamColor;
@@ -74,12 +75,19 @@ public class Player : MonoBehaviour {
 	}
 
 	public void AddUnit(string unitName, Vector3 spawnPoint, Vector3 rallyPoint, Quaternion rotation) {
-		Units units = GetComponentInChildren< Units >();
-		GameObject newUnit = (GameObject)Instantiate(ResourceManager.GetUnit(unitName),spawnPoint, rotation);
-		newUnit.transform.parent = units.transform;
-		Unit unitObject = newUnit.GetComponent< Unit >();
-		if (unitObject && spawnPoint != rallyPoint) {
-			unitObject.StartMove (rallyPoint);
+
+
+			Units units = GetComponentInChildren< Units > ();
+			GameObject newUnit = (GameObject)Instantiate (ResourceManager.GetUnit (unitName), spawnPoint, rotation);
+			newUnit.transform.parent = units.transform;
+			Unit unitObject = newUnit.GetComponent< Unit > ();
+		if (GetResourceAmount(ResourceType.Money) != 0 &&!(GetResourceAmount(ResourceType.Money)-unitObject.cost <0)) {
+			AddResource (ResourceType.Money, -unitObject.cost);
+			if (unitObject && spawnPoint != rallyPoint) {
+				unitObject.StartMove (rallyPoint);
+			}
+		}else{
+			Destroy(newUnit);
 		}
 	}
 
@@ -140,13 +148,20 @@ public class Player : MonoBehaviour {
 	}
 
 	public void StartConstruction() {
-		findingPlacement = false;
-		Buildings buildings = GetComponentInChildren< Buildings >();
-		if(buildings) tempBuilding.transform.parent = buildings.transform;
-		tempBuilding.SetPlayer();
-		tempBuilding.SetColliders(true);
-		tempCreator.SetBuilding(tempBuilding);
-		tempBuilding.StartConstruction();
+		if (GetResourceAmount(ResourceType.Money) != 0 && !(GetResourceAmount(ResourceType.Money) - tempBuilding.cost < 0)) {
+			AddResource (ResourceType.Money, -tempBuilding.cost);
+			findingPlacement = false;
+			Buildings buildings = GetComponentInChildren< Buildings > ();
+			if (buildings)
+				tempBuilding.transform.parent = buildings.transform;
+			tempBuilding.SetPlayer ();
+			tempBuilding.SetColliders (true);
+			tempCreator.SetBuilding (tempBuilding);
+			tempBuilding.StartConstruction ();
+		} else {
+			CancelBuildingPlacement();
+		}
+
 	}
 
 	public void CancelBuildingPlacement() {
