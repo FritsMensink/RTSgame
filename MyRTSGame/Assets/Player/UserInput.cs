@@ -18,7 +18,6 @@ public class UserInput : MonoBehaviour {
 	public static ArrayList WorldObjectsInDrag = new ArrayList(); // of gameobject
 	
 	private bool FinishDragOnThisFrame;
-	private bool StartedDrag;
 	public Texture2D MouseDragTexture;
 	public GameObject Target;
 	private static Vector3 mouseDownPoint;
@@ -140,24 +139,18 @@ public class UserInput : MonoBehaviour {
 			RotateCamera ();
 
 			Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-		
+										
 			if (Physics.Raycast (ray, out hit, Mathf.Infinity)) {
 				currentMousePoint = hit.point;
 			
 				// Store where clicked
 				if (Input.GetMouseButtonDown (0) && player.hud.MouseInBounds ()) {
-//					if(player.hud.MouseInBounds() && !Input.GetKey(KeyCode.LeftAlt) && GetFirstSelectedWorldObject() != null) {
 					if (player.IsFindingBuildingLocation ()) {
 						player.CancelBuildingPlacement ();
-					} //else {
-//							GetFirstSelectedWorldObject().SetSelection(false, player.hud.GetPlayingArea());
-//							CurrentlySelectedWorldObjects.Remove(GetFirstSelectedWorldObject());
-//						}
-//					}
+					}
 					mouseDownPoint = hit.point;
 					TimeLeftBeforeDeclareDrag = TimeLimitBeforeDeclareDrag;
 					MouseDragStart = Input.mousePosition;
-					StartedDrag = true;
 				
 				} else if (Input.GetMouseButton (0) && player.hud.MouseInBounds ()) {
 					// if the user is not draggin lets do the test
@@ -277,20 +270,23 @@ public class UserInput : MonoBehaviour {
 						boxLeft = Input.mousePosition.x;
 						boxTop = (Screen.height - Input.mousePosition.y) - boxHeight;
 
-						if (FloatToBool (boxWidth))
-						if (FloatToBool (boxHeight))
-							boxStart = new Vector2 (Input.mousePosition.x, Input.mousePosition.y + boxHeight);
-						else
-							boxStart = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
-						else
-				if (FloatToBool (boxWidth))
-						if (FloatToBool (boxHeight))
-							boxStart = new Vector2 (Input.mousePosition.x + boxWidth, Input.mousePosition.y + boxHeight);
-						else
-							boxStart = new Vector2 (Input.mousePosition.x + boxWidth, Input.mousePosition.y);
+						if (FloatToBool (boxWidth)) {
+							if (FloatToBool (boxHeight)) {
+								boxStart = new Vector2 (Input.mousePosition.x, Input.mousePosition.y + boxHeight);
+									}else {
+								boxStart = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
+									} 
+								}
+						else {
+							if (!FloatToBool (boxWidth)) {
+								if (FloatToBool (boxHeight)) {
+									boxStart = new Vector2 (Input.mousePosition.x + boxWidth, Input.mousePosition.y + boxHeight);
+								} else {
+									boxStart = new Vector2 (Input.mousePosition.x + boxWidth, Input.mousePosition.y);
+										}
+									}
 			
-			
-			
+								}
 						boxFinish = new Vector2 (
 					boxStart.x + Unsinged (boxWidth),
 					boxStart.y - Unsinged (boxHeight)

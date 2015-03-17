@@ -169,11 +169,11 @@ public class HUD : MonoBehaviour {
 	public bool MouseInBounds() {
 		//Scherm cordinaten beginnen links onderaan van het scherm.
 		Vector3 mousePos = Input.mousePosition;
-		bool insideWidth = mousePos.x >= 0 && mousePos.x <= Screen.width - ORDERS_BAR_WIDTH;
+		bool insideWidth = mousePos.x >= 0 && mousePos.x <= Screen.width - ORDERS_BAR_WIDTH + 25;
 		bool insideHeight = mousePos.y >= 0 && mousePos.y <= Screen.height - RESOURCE_BAR_HEIGHT;
 		return insideWidth && insideHeight;
 	}
-
+	 
 	public Rect GetPlayingArea() {
 		return new Rect(0, RESOURCE_BAR_HEIGHT, Screen.width - ORDERS_BAR_WIDTH, Screen.height - RESOURCE_BAR_HEIGHT);
 	}
@@ -207,16 +207,6 @@ public class HUD : MonoBehaviour {
 		//de lege string op het eind geeft aan dat we geen text in deze rechthoekverwachten
 		GUI.Box(new Rect(BUILD_IMAGE_WIDTH + SCROLL_BAR_WIDTH, 0, ORDERS_BAR_WIDTH, Screen.height - RESOURCE_BAR_HEIGHT),"");
 				
-		//string selectionName = "";
-		//if (player.SelectedObject) {
-		//	selectionName = player.SelectedObject.objectName;
-		//}
-//		if(!selectionName.Equals("")) {
-//			int leftPos = BUILD_IMAGE_WIDTH + SCROLL_BAR_WIDTH / 2;
-//			int topPos = buildAreaHeight + BUTTON_SPACING;
-//			GUI.Label(new Rect(leftPos, topPos, ORDERS_BAR_WIDTH, SELECTION_NAME_HEIGHT), selectionName);
-//		}
-
 		if (UserInput.GetFirstSelectedWorldObject() != null && UserInput.GetFirstSelectedWorldObject().IsOwnedBy(player)) {
 			//Debug.Log("drawordersbar 183");
 			//reset slider value if the selected object has changed
@@ -290,7 +280,9 @@ public class HUD : MonoBehaviour {
 		//define the area to draw the actions inside
 		GUI.BeginGroup(new Rect(BUILD_IMAGE_WIDTH, 0, ORDERS_BAR_WIDTH, buildAreaHeight));
 		//draw scroll bar for the list of actions if need be
-		if(numActions >= MaxNumRows(buildAreaHeight)) DrawSlider(buildAreaHeight, numActions / 2.0f);
+		if (numActions >= MaxNumRows (buildAreaHeight)) {
+			DrawSlider (buildAreaHeight, numActions / 2.0f);
+		}
 		//display possible actions as buttons and handle the button click for each
 		for(int i = 0; i < numActions; i++) {
 			int column = i % 2;

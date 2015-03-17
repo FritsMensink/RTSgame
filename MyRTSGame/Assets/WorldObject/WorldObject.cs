@@ -15,7 +15,6 @@ public class WorldObject : MonoBehaviour {
 
 	protected Player player;
 	protected string[] actions = {};
-
 	//selecte van world objects
 	protected Bounds selectionBounds;
 	protected Rect playingArea = new Rect(0.0f, 0.0f, 0.0f, 0.0f);
@@ -333,8 +332,16 @@ public class WorldObject : MonoBehaviour {
 	protected bool TargetInFrontOfWeapon() {
 		Vector3 targetLocation = target.transform.position;
 		Vector3 direction = targetLocation - transform.position;
-		if(direction.normalized == transform.forward.normalized) return true;
-		else return false;
+        float angle = Vector3.Angle(direction, transform.forward);
+
+		if (angle < 5.0 && angle > -5.0) {
+			return true;
+		}
+
+		//if(direction.normalized == transform.forward.normalized) return true;
+		else {
+			return false;
+		}
 	}
 	
 	private Vector3 FindNearestAttackPosition() {

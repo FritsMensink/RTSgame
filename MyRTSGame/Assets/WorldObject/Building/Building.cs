@@ -36,7 +36,8 @@ public class Building : WorldObject {
 	protected override void Update () {
 		base.Update ();
 
-		ProcessBuildQueue();
+		ProcessBuildQueue ();
+	
 	}
 
 	protected override void OnGUI() {
