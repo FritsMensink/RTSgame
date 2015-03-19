@@ -11,19 +11,32 @@ using UnityEngine;
 using System.Collections;
 using RTS;
 public class PowerPlant : Building {
+	bool powerSupplied;
 
 	protected override void Start ()
 	{
 		base.Start ();
-		gainPower ();
+		powerSupplied = false;
 	}
+
+	protected override void Update(){
+		if (player) {
+			if (!powerSupplied && (!needsBuilding)) {
+				gainPower ();
+				powerSupplied = true;
+			}
+		}
+	}
+
 	protected virtual void gainPower() {
-		if (!needsBuilding) {
+		if (!powerSupplied&&!needsBuilding&&player.name!=null) {
 			player.AddResource (ResourceType.Power, 50);
 		}
 	}
 	protected void OnDestroy(){
-		player.AddResource (ResourceType.Power, -50);
+		if (player) {
+			player.AddResource (ResourceType.Power, -50);
+		}
 	}
 }
 

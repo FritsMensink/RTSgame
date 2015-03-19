@@ -77,13 +77,11 @@ public class Player : MonoBehaviour {
 	}
 
 	public void AddUnit(string unitName, Vector3 spawnPoint, Vector3 rallyPoint, Quaternion rotation) {
-
-
 			Units units = GetComponentInChildren< Units > ();
 			GameObject newUnit = (GameObject)Instantiate (ResourceManager.GetUnit (unitName), spawnPoint, rotation);
 			newUnit.transform.parent = units.transform;
 			Unit unitObject = newUnit.GetComponent< Unit > ();
-		if (GetResourceAmount(ResourceType.Money) != 0 &&!(GetResourceAmount(ResourceType.Money)-unitObject.cost <0)) {
+		if (!(GetResourceAmount(ResourceType.Money)-unitObject.cost <0)) {
 			AddResource (ResourceType.Money, -unitObject.cost);
 			if (unitObject && spawnPoint != rallyPoint) {
 				unitObject.StartMove (rallyPoint);
@@ -151,8 +149,8 @@ public class Player : MonoBehaviour {
 	}
 
 	public void StartConstruction() {
-		if (GetResourceAmount(ResourceType.Money) != 0 && !(GetResourceAmount(ResourceType.Money) - tempBuilding.cost < 0) ) {
-			if(GetResourceAmount(ResourceType.Power) != 0 &&!(GetResourceAmount(ResourceType.Power) - tempBuilding.powerUsage < 0)){
+		if (!(GetResourceAmount(ResourceType.Money) - tempBuilding.cost < 0) ) {
+			if(!(GetResourceAmount(ResourceType.Power) - tempBuilding.powerUsage < 0)){
 			AddResource (ResourceType.Money, -tempBuilding.cost);
 			AddResource (ResourceType.Power, -tempBuilding.powerUsage);
 			findingPlacement = false;
