@@ -25,13 +25,13 @@ public class Player : MonoBehaviour {
 	protected AudioElement audioElement;
 	//public WorldObject SelectedObject { get; set; }
 
-	void Awake() {
+	protected virtual void Awake() {
 		resources = InitResourceList();
 		resourceLimits = InitResourceList();
 	}
 
 	// Use this for initialization
-	void Start () {
+	protected virtual void Start (){
 		hud = GetComponentInChildren<HUD> ();
 		AddStartResourceLimits();
 		AddStartResources();
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	protected virtual void Update () {
 		if(humanControlled) {
 			hud.SetResourceValues(resources, resourceLimits);
 		}
@@ -89,8 +89,8 @@ public class Player : MonoBehaviour {
 				unitObject.StartMove (rallyPoint);
 			}
 		}else{
-			Destroy(newUnit);
 			audioElement.Play(noMoney);
+			Destroy(newUnit);
 		}
 	}
 
@@ -151,8 +151,10 @@ public class Player : MonoBehaviour {
 	}
 
 	public void StartConstruction() {
-		if (GetResourceAmount(ResourceType.Money) != 0 && !(GetResourceAmount(ResourceType.Money) - tempBuilding.cost < 0)) {
+		if (GetResourceAmount(ResourceType.Money) != 0 && !(GetResourceAmount(ResourceType.Money) - tempBuilding.cost < 0) ) {
+			if(GetResourceAmount(ResourceType.Power) != 0 &&!(GetResourceAmount(ResourceType.Power) - tempBuilding.powerUsage < 0)){
 			AddResource (ResourceType.Money, -tempBuilding.cost);
+			AddResource (ResourceType.Power, -tempBuilding.powerUsage);
 			findingPlacement = false;
 			Buildings buildings = GetComponentInChildren< Buildings > ();
 			if (buildings)
@@ -161,9 +163,14 @@ public class Player : MonoBehaviour {
 			tempBuilding.SetColliders (true);
 			tempCreator.SetBuilding (tempBuilding);
 			tempBuilding.StartConstruction ();
+			}
+			else{
+				audioElement.Play(lowPower);
+				CancelBuildingPlacement();
+			}
 		} else {
-			CancelBuildingPlacement();
 			audioElement.Play(noMoney);
+			CancelBuildingPlacement();
 		}
 
 	}
