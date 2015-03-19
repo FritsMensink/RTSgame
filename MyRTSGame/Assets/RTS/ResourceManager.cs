@@ -5,7 +5,7 @@ namespace RTS {
 public static class ResourceManager {
 
 		//Camera variables
-		public static float ScrollSpeed { get { return 100; } }
+		public static float ScrollSpeed { get { return 40; } }
 		public static float RotateSpeed { get { return 100; } }
 		public static float RotateAmount { get { return 10; } }
 

@@ -107,6 +107,13 @@ public class UserInput : MonoBehaviour {
 		if(!mouseScroll) {
 			player.hud.SetCursorState(CursorState.Select);
 		}
+		if (Input.GetKey (KeyCode.H)) {
+			Worker a =(Worker) player.transform.GetComponentInChildren(typeof(Worker));
+
+			if(player.humanControlled&&player&&a){
+				Camera.main.transform.position = new Vector3(a.transform.position.x,Camera.main.transform.position.y,a.transform.position.z);
+			}
+		}
 	}
 
 	private void RotateCamera() {
