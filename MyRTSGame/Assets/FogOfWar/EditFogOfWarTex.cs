@@ -4,17 +4,18 @@ using System.IO;
 
 public class EditFogOfWarTex : MonoBehaviour {
 
-	public int scaleFogOfWarPlane=11;
+
 	public Texture2D FogOfWarTex;
-	int scalefix=8;
+	int fixwidth, fixheight;
+	Terrain t;
 
 
 	public void drawCircle(int cx, int cy, int r)
 	{
-		cx = cx * scaleFogOfWarPlane;
-		cy = cy * scaleFogOfWarPlane;
-		cx = cx-(cx / scalefix);
-		cy = cy-(cy / scalefix);
+
+		cx = cx * fixwidth;
+		cy = cy * fixheight;
+
 		int x, y, px, nx, py, ny, d;
 		for (x = 0; x <= r; x++)
 		{
@@ -25,10 +26,12 @@ public class EditFogOfWarTex : MonoBehaviour {
 				nx = cx - x;
 				py = cy + y;
 				ny = cy - y;
+				//if(!(px>FogOfWarTex.height)&&!(py>FogOfWarTex.width)&&!(ny<FogOfWarTex.width)&&!(nx<FogOfWarTex.height)){
 				FogOfWarTex.SetPixel(px, py, Color.green);
 				FogOfWarTex.SetPixel(nx, py, Color.green);
 				FogOfWarTex.SetPixel(px, ny, Color.green);
 				FogOfWarTex.SetPixel(nx, ny, Color.green);
+				//}
 
 			}
 		}
@@ -39,6 +42,12 @@ public class EditFogOfWarTex : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Reset ();
+		t = (Terrain)GameObject.Find("Terrain").GetComponent(typeof(Terrain));
+		Vector3 worldsize = t.terrainData.size;
+		Vector3 worldscale = t.transform.localScale;
+		fixwidth = FogOfWarTex.height/(int)worldsize.x;
+		fixheight = FogOfWarTex.width/(int)worldsize.z;
+
 		//drawCircle (20, 20, 20);
 
 		//var bytes = FogOfWarTex.EncodeToPNG ();
@@ -61,5 +70,11 @@ public class EditFogOfWarTex : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+	}
+	void OnApplicationQuit() {
+		Reset ();
+	}
+	void OnDestroy() {
+		Reset ();
 	}
 }
