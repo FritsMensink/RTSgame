@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using RTS;
+using System;
 
 public class Player : MonoBehaviour {
 
@@ -15,7 +16,7 @@ public class Player : MonoBehaviour {
 
 	//Team kleur
 	public Color teamColor;
-
+	private EditFogOfWarTex EditFogOfWarTex;
 	//voor het bouwen
 	public Material notAllowedMaterial, allowedMaterial;
 
@@ -32,6 +33,8 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	protected virtual void Start (){
+		EditFogOfWarTex = (EditFogOfWarTex)GameObject.Find ("FogOfWar").GetComponent (typeof(EditFogOfWarTex));
+
 		hud = GetComponentInChildren<HUD> ();
 		AddStartResourceLimits();
 		AddStartResources();
@@ -161,6 +164,9 @@ public class Player : MonoBehaviour {
 			tempBuilding.SetColliders (true);
 			tempCreator.SetBuilding (tempBuilding);
 			tempBuilding.StartConstruction ();
+				if (humanControlled){
+					EditFogOfWarTex.drawCircle ((int)Math.Ceiling (tempBuilding.transform.position.x), (int)Math.Ceiling (tempBuilding.transform.position.z), tempBuilding.visiblerange);
+				}
 			}
 			else{
 				audioElement.Play(lowPower);

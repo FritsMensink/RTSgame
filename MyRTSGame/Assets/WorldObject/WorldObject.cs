@@ -52,7 +52,7 @@ public class WorldObject : MonoBehaviour {
 	public float weaponAimSpeed = 1.0f;
 
 	//fogofwar
-	public EditFogOfWarTex EditFogOfWarTex;
+	protected EditFogOfWarTex EditFogOfWarTex;
 	protected Vector3 curPos;
 	protected Vector3 lastPos;
 	//selection

@@ -140,7 +140,10 @@ public class Building : WorldObject {
 	}
 
 	public void Sell() {
-		if(player) player.AddResource(ResourceType.Money, sellValue);
+		if (player) {
+			player.AddResource (ResourceType.Money, sellValue);
+			player.AddResource (ResourceType.Power, powerUsage);
+		}
 		if (currentlySelected) {
 			SetSelection (false, playingArea);
 			UserInput.CurrentlySelectedWorldObjects = new ArrayList();
@@ -175,9 +178,6 @@ public class Building : WorldObject {
 			needsBuilding = false;
 			RestoreMaterials();
 			SetTeamColor();
-			if (player.humanControlled){
-				EditFogOfWarTex.drawCircle ((int)Math.Ceiling (transform.position.x), (int)Math.Ceiling (transform.position.z), visiblerange);
-			}
 		}
 		SetSpawnPoint ();
 	}
