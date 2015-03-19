@@ -475,16 +475,21 @@ public class WorldObject : MonoBehaviour {
 		//determine what should be done by the world object at the current point in time
 		Vector3 currentPosition = transform.position;
 		nearbyObjects = WorkManager.FindNearbyObjects(currentPosition, detectionRange);
-
+		try {
 		if(CanAttack()) {
 			List< WorldObject > enemyObjects = new List< WorldObject >();
 			foreach(WorldObject nearbyObject in nearbyObjects) {
-				if(nearbyObject.GetPlayer().username != player.username)  { enemyObjects.Add(nearbyObject); }
+				
+				if (nearbyObject.player != null ) {
+				if(nearbyObject.GetPlayer().username != player.username)  
+				{ enemyObjects.Add(nearbyObject); 
+				}
+					} 
 
 			}
 			WorldObject closestObject = WorkManager.FindNearestWorldObjectInListToPosition(enemyObjects, currentPosition);
 			if(closestObject) BeginAttack(closestObject);
-		}
+			} } catch (Exception) { }
 	}
 
 	public Player GetPlayer() {

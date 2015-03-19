@@ -20,8 +20,9 @@ public class OilPump : Building {
 		base.Update ();
 		
 		currentChargeTime += Time.deltaTime;
-
-		gainMoney ();
+		if (player) {
+			gainMoney ();
+		}
 	}
 
 	protected virtual void gainMoney() {
