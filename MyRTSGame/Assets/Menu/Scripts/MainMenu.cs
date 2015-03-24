@@ -17,7 +17,7 @@ public class MainMenu : Menu {
 		base.HandleButton(text);
 		switch(text) {
 		case "New Game": NewGame(); break;
-		case "Controlls": Controlls(); break;
+		case "Controls": Controls(); break;
 		case "Exit Game": ExitGame(); break;
 		default: break;
 		}
@@ -30,7 +30,7 @@ public class MainMenu : Menu {
 		Time.timeScale = 1.0f;
 	}
 
-	private void Controlls ()
+	private void Controls ()
 	{
 		this.enabled = false;
 		c.enabled = true;
