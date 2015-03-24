@@ -11,7 +11,7 @@ public class WorldObject : MonoBehaviour {
 
 	public string objectName;
 	public Texture2D buildImage;
-	public int powerUsage,cost, sellValue, hitPoints, maxHitPoints, visiblerange;
+	public int powerUsage, cost, sellValue, hitPoints, maxHitPoints, visiblerange;
 
 	protected Player player;
 	protected string[] actions = {};
@@ -86,9 +86,6 @@ public class WorldObject : MonoBehaviour {
 	// Update is called once per frame
 	protected virtual void Update () {
 
-		//selectionBounds = ResourceManager.InvalidBounds;
-		//CalculateBounds ();
-		//selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
 		//zorg er voor dat het wapen geladen word en er mogelijk aangevallen kan worden.
 		currentWeaponChargeTime += Time.deltaTime;
 

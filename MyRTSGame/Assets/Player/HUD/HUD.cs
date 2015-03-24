@@ -206,30 +206,44 @@ public class HUD : MonoBehaviour {
 		//maak een rechthoek binnen de groep die begint op (0,0) coordinaat van de net aangemaakte groep.
 		//de lege string op het eind geeft aan dat we geen text in deze rechthoekverwachten
 		GUI.Box(new Rect(BUILD_IMAGE_WIDTH + SCROLL_BAR_WIDTH, 0, ORDERS_BAR_WIDTH, Screen.height - RESOURCE_BAR_HEIGHT),"");
-				
-		if (UserInput.GetFirstSelectedWorldObject() != null && UserInput.GetFirstSelectedWorldObject().IsOwnedBy(player)) {
-			//Debug.Log("drawordersbar 183");
-			//reset slider value if the selected object has changed
-			if (lastSelection && lastSelection != UserInput.GetFirstSelectedWorldObject()) {
+		string objectName = "";		
+		if (UserInput.GetFirstSelectedWorldObject () != null && UserInput.GetFirstSelectedWorldObject ().IsOwnedBy (player)) {
+
+			objectName = UserInput.GetFirstSelectedWorldObject().objectName;
+			//reset de slider als het geselecteerde wereld object is veranderd.
+			if (lastSelection && lastSelection != UserInput.GetFirstSelectedWorldObject ()) {
 				sliderValue = 0.0f;
 			}
 
-			Building building = UserInput.GetFirstSelectedWorldObject().GetComponent<Building>();
+			Building building = UserInput.GetFirstSelectedWorldObject ().GetComponent<Building> ();
 
-			if (building && building.needsBuilding) { drawOrders = false; }
+			if (building && building.needsBuilding) {
+				drawOrders = false;
+			}
 
 			if (drawOrders) {
-			DrawActions (UserInput.GetFirstSelectedWorldObject ().GetActions ());
-			//store the current selection
-			lastSelection = UserInput.GetFirstSelectedWorldObject ();
+				DrawActions (UserInput.GetFirstSelectedWorldObject ().GetActions ());
+				//store the current selection
+				lastSelection = UserInput.GetFirstSelectedWorldObject ();
 
-			Building selectedBuilding = lastSelection.GetComponent< Building >();
-			if(selectedBuilding) {
-				DrawBuildQueue(selectedBuilding.getBuildQueueValues(), selectedBuilding.getBuildPercentage());
-				DrawStandardBuildingOptions(selectedBuilding);
+				Building selectedBuilding = lastSelection.GetComponent< Building > ();
+				if (selectedBuilding) {
+					DrawBuildQueue (selectedBuilding.getBuildQueueValues (), selectedBuilding.getBuildPercentage ());
+					DrawStandardBuildingOptions (selectedBuilding);
 				} 
 			}
+
+
+
+			if(!objectName.Equals("")) {
+			
+			int leftPos = BUILD_IMAGE_WIDTH + SCROLL_BAR_WIDTH / 2;
+			int topPos = buildAreaHeight + BUTTON_SPACING;
+			GUI.Label (new Rect (leftPos, topPos, ORDERS_BAR_WIDTH, SELECTION_NAME_HEIGHT), objectName);
+			}
 		}
+
+
 		GUI.EndGroup();
 	}
 
@@ -291,7 +305,8 @@ public class HUD : MonoBehaviour {
 			Texture2D action = ResourceManager.GetBuildImage(actions[i]);
 			if(action) {
 				//create the button and handle the click of that button
-				if(GUI.Button(pos, action)) {
+				if(GUI.Button(pos, new GUIContent(action, action.name))) {
+
 					if(UserInput.GetFirstSelectedWorldObject()) 
 					{ 
 						if(player.IsFindingBuildingLocation()) {
@@ -300,9 +315,12 @@ public class HUD : MonoBehaviour {
 						PlayClick();
 						UserInput.GetFirstSelectedWorldObject().PerformAction(actions[i]);
 					}
+
 				}
+
 			}
 		}
+		GUI.Label (new Rect(25, 100, ORDERS_BAR_WIDTH - 20, RESOURCE_BAR_HEIGHT + 20), GUI.tooltip);
 		GUI.EndGroup();
 	}
 
@@ -357,13 +375,14 @@ public class HUD : MonoBehaviour {
 		int topPos = buildAreaHeight - BUILD_IMAGE_HEIGHT / 2;
 		int width = BUILD_IMAGE_WIDTH / 2;
 		int height = BUILD_IMAGE_HEIGHT / 2;
-		if(building.hasSpawnPoint()) {
 
-			if(GUI.Button(new Rect(leftPos, topPos, width, height), building.sellImage)) {
+
+		if(GUI.Button(new Rect(leftPos, topPos, width, height), building.sellImage)) {
 				building.Sell();
 				PlayClick();
-			}
+		}
 
+		if(building.hasSpawnPoint()) {
 			//voor de volgende knop goed te positioneren naast de oude
 			leftPos += width + BUTTON_SPACING;
 

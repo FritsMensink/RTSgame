@@ -15,6 +15,7 @@ public class Building : WorldObject {
 	public Texture2D sellImage;
 
 	public bool needsBuilding = false;
+	protected bool canCreateUnits = false;
 		
 	public AudioClip finishedJobSound;
 	public float finishedJobVolume = 1.0f;
@@ -36,7 +37,9 @@ public class Building : WorldObject {
 	protected override void Update () {
 		base.Update ();
 
-		ProcessBuildQueue ();
+		if (canCreateUnits) {
+			ProcessBuildQueue ();
+		}
 	
 	}
 

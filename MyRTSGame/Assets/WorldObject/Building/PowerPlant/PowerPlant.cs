@@ -38,5 +38,9 @@ public class PowerPlant : Building {
 			player.AddResource (ResourceType.Power, -50);
 		}
 	}
+
+	public override bool hasRallyPoint() {
+		return false;
+	}
 }
 

@@ -81,7 +81,9 @@ public class Worker : Unit {
 	
 	private void CreateBuilding(string buildingName) {
 		Vector3 buildPoint = new Vector3(transform.position.x, transform.position.y, transform.position.z + 10);
-		if(player) player.CreateBuilding(buildingName, buildPoint, this, playingArea);
+		if (player) { 
+			player.CreateBuilding (buildingName, buildPoint, this, playingArea);
+		}
 	}
 
 	protected override void InitialiseAudio () {

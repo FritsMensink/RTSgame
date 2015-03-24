@@ -34,5 +34,9 @@ public class OilPump : Building {
 			}
 		}
 	}
+
+	public override bool hasRallyPoint() {
+		return false;
+	}
 }
 

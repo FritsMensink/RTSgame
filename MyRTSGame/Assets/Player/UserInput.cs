@@ -59,18 +59,18 @@ public class UserInput : MonoBehaviour {
 			movement.x -= ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanLeft);
 			mouseScroll = true;
-		} else if(xpos <= Screen.width && xpos > Screen.width - ResourceManager.ScrollWidth - 10 || Input.GetKey(KeyCode.D)) {
+		} else if(xpos <= Screen.width && xpos > Screen.width - ResourceManager.ScrollWidth || Input.GetKey(KeyCode.D)) {
 			movement.x += ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanRight);
 			mouseScroll = true;
 		}
 
 		//verticale camera beweging
-		if(ypos >= 0 && ypos < ResourceManager.ScrollWidth || Input.GetKey(KeyCode.S)) {
+		if(ypos >= 0 && ypos < ResourceManager.ScrollWidth  || Input.GetKey(KeyCode.S)) {
 			movement.z -= ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanDown);
 			mouseScroll = true;
-		} else if(ypos <= Screen.height && ypos > Screen.height - ResourceManager.ScrollWidth + 5 || Input.GetKey(KeyCode.W)) {
+		} else if(ypos <= Screen.height && ypos > Screen.height - ResourceManager.ScrollWidth || Input.GetKey(KeyCode.W)) {
 			movement.z += ResourceManager.ScrollSpeed;
 			player.hud.SetCursorState(CursorState.PanUp);
 			mouseScroll = true;
@@ -152,9 +152,7 @@ public class UserInput : MonoBehaviour {
 			
 				// Store where clicked
 				if (Input.GetMouseButtonDown (0) && player.hud.MouseInBounds ()) {
-					if (player.IsFindingBuildingLocation ()) {
-						player.CancelBuildingPlacement ();
-					}
+
 					mouseDownPoint = hit.point;
 					TimeLeftBeforeDeclareDrag = TimeLimitBeforeDeclareDrag;
 					MouseDragStart = Input.mousePosition;
@@ -182,9 +180,7 @@ public class UserInput : MonoBehaviour {
 					if (Input.GetMouseButtonUp (1)) {
 						if (CurrentlySelectedWorldObjects.Count > 0) {
 							if (player.IsFindingBuildingLocation ()) {
-								if (player.CanPlaceBuilding ()) {
-									player.StartConstruction ();
-								}
+									player.CancelBuildingPlacement();
 							} else {
 								foreach (GameObject currentlySelectedWorldObject in CurrentlySelectedWorldObjects) {
 									if (currentlySelectedWorldObject != null && hit.collider.gameObject != null) {
@@ -195,17 +191,15 @@ public class UserInput : MonoBehaviour {
 						}
 					}	
 					// Is it terrain?  
-					//print (hit.collider.name);
 					if (hit.collider.name == "Terrain") {
 						// right clicking creates target model if so spawn pointer
-						if (Input.GetMouseButtonDown (1)) {  
-							//GameObject TargetObj = Instantiate (Target, hit.point, Quaternion.identity) as GameObject;
-							//TargetObj.name = "Target Instantiate";
-							//RightClickPoint = hit.point;
-						} else if (Input.GetMouseButtonUp (1)) {
-					
-						} else if (Input.GetMouseButtonUp (0) && DidUserClickLeftMouse (mouseDownPoint)) {
+						if (Input.GetMouseButtonUp (0) && DidUserClickLeftMouse (mouseDownPoint)) {
 
+							if (player.IsFindingBuildingLocation ()) {
+								if (player.CanPlaceBuilding ()) {
+									player.StartConstruction ();
+								}
+							}
 							if (!ShiftKeysDown ()) {
 								DeselectGameobjectsIfSelected ();
 							}
@@ -224,8 +218,6 @@ public class UserInput : MonoBehaviour {
 									if (!ShiftKeysDown ()) {
 										DeselectGameobjectsIfSelected ();
 									}
-									//GameObject SelectedObj = hit.collider.transform.FindChild ("Selector").gameObject;
-									//SelectedObj.SetActive(true);
 									// add unit to current units
 									CurrentlySelectedWorldObjects.Add (hit.collider.gameObject);
 								
@@ -240,8 +232,6 @@ public class UserInput : MonoBehaviour {
 										hit.collider.gameObject.GetComponent<WorldObject> ().SetSelection (false, player.hud.GetPlayingArea ());
 									} else {
 										DeselectGameobjectsIfSelected ();
-										//GameObject SelectedObj = hit.collider.transform.FindChild ("Selector").gameObject;
-										//SelectedObj.SetActive (true);
 										CurrentlySelectedWorldObjects.Add (hit.collider.gameObject);
 										hit.collider.gameObject.GetComponent<WorldObject> ().SetSelection (true, player.hud.GetPlayingArea ());
 									}
@@ -251,24 +241,15 @@ public class UserInput : MonoBehaviour {
 								//if this object is not unit
 								if (!ShiftKeysDown ()) {
 									DeselectGameobjectsIfSelected ();
-									//GameObject SelectedObj = hit.collider.transform.FindChild ("Selector").gameObject;
-									//SelectedObj.SetActive (false);
 								}
 							}
 						}
 					}
 				} else {
-//					if (Input.GetMouseButtonUp (0) && DidUserClickLeftMouse (mouseDownPoint) && player.hud.MouseInBounds())
 					if (!ShiftKeysDown () && player.hud.MouseInBounds ()) {
 						DeselectGameobjectsIfSelected ();
 					}
-//			}//end of raycast
-//		} // end of dragging
-//			if(!ShiftKeysDown() && StartedDrag && UserIsDragging && player.hud.MouseInBounds())
-//		{
-//			DeselectGameobjectsIfSelected();
-//			StartedDrag = false;
-//		}
+
 				
 					if (UserIsDragging) {
 						//GUI Variables
@@ -317,7 +298,6 @@ public class UserInput : MonoBehaviour {
 				GameObject UnitObj = WorldObjectsOnScreen [i] as GameObject;
 				if (UnitObj) {
 					WorldObject WorldObject = UnitObj.GetComponent<WorldObject> ();
-					//GameObject SelectedObj = UnitObj.transform.FindChild ("Selector").gameObject;
 					if (WorldObject) {
 					//if not allready in the dragged units
 						if (!UnitAlreadyInDraggedUnits (UnitObj)) {
@@ -344,10 +324,6 @@ public class UserInput : MonoBehaviour {
 		{
 			GUI.color = new Color (1, 1, 1, 0.5f);
 			GUI.DrawTexture (new Rect(boxLeft, boxTop, boxWidth, boxHeight), MouseDragTexture);
-		//	GUI.Box(new Rect(boxLeft,
-		//	                 boxTop,
-		//	                 boxWidth,
-		//	                 boxHeight), "", MouseDragTexture);
 		}
 		
 	}
@@ -446,7 +422,6 @@ public class UserInput : MonoBehaviour {
 			for(int i = 0; i < CurrentlySelectedWorldObjects.Count; i++)
 			{
 				GameObject ArrayListUnit = CurrentlySelectedWorldObjects[i] as GameObject;
-				//ArrayListUnit.transform.FindChild("Selector").gameObject.SetActive(false);
 				if (ArrayListUnit) {
 				ArrayListUnit.GetComponent<WorldObject>().SetSelection(false, player.hud.GetPlayingArea());
 				}
