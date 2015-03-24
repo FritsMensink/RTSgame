@@ -44,7 +44,6 @@ public class EditFogOfWarTex : MonoBehaviour {
 		Reset ();
 		t = (Terrain)GameObject.Find("Terrain").GetComponent(typeof(Terrain));
 		Vector3 worldsize = t.terrainData.size;
-		Vector3 worldscale = t.transform.localScale;
 		fixwidth = FogOfWarTex.height/(int)worldsize.x;
 		fixheight = FogOfWarTex.width/(int)worldsize.z;
 

@@ -89,7 +89,7 @@ public class HUD : MonoBehaviour {
 		volumes.Add (clickVolume);
 		audioElement = new AudioElement(sounds, volumes, "HUD", null);
 	}
-	
+
 	// Update is called once per frame
 	void OnGUI() {
 		//we willen alleen iets tekenen als de speler human controlled is.
