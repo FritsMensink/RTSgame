@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: b7d777b04081d5348b85371f18571eaf
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - GUIBackgroundSkin: {fileID: 11400000, guid: defcd444756325e4ca2219b766a27c4e,
+      type: 2}
+  - header: {fileID: 2800000, guid: e6e7f88c963d15f4f9ed7ef7d77373a0, type: 3}
+  - clickSound: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

@@ -3,16 +3,21 @@ using System.Collections;
 using RTS;
 
 public class MainMenu : Menu {
-	
+	Controls c;
 	protected override void SetButtons () {
-		buttons = new string[] {"New Game", "Exit Game"};
+		buttons = new string[] {"New Game","Controls","Exit Game"};
 		Screen.showCursor = true;
 	}
-	
+	protected override void Start ()
+	{
+		base.Start ();
+		c =(Controls) GetComponent(typeof(Controls));
+	}
 	protected override void HandleButton (string text) {
 		base.HandleButton(text);
 		switch(text) {
 		case "New Game": NewGame(); break;
+		case "Controlls": Controlls(); break;
 		case "Exit Game": ExitGame(); break;
 		default: break;
 		}
@@ -23,5 +28,11 @@ public class MainMenu : Menu {
 		Application.LoadLevel("Level01");
 		//makes sure that the loaded level runs at normal speed
 		Time.timeScale = 1.0f;
+	}
+
+	private void Controlls ()
+	{
+		this.enabled = false;
+		c.enabled = true;
 	}
 }
