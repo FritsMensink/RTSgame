@@ -30,12 +30,14 @@ public class PowerPlant : Building {
 
 	protected virtual void gainPower() {
 		if (!powerSupplied&&!needsBuilding&&player.name!=null) {
-			player.AddResource (ResourceType.Power, 50);
+			player.IncrementResourceLimit(ResourceType.Power, 50);
+			player.AddResource(ResourceType.Power, 50);
 		}
 	}
 	protected void OnDestroy(){
 		if (player) {
-			player.AddResource (ResourceType.Power, -50);
+			player.IncrementResourceLimit(ResourceType.Power, -50);
+			player.AddResource(ResourceType.Power, -50);
 		}
 	}
 
