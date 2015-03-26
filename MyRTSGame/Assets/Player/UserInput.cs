@@ -111,7 +111,7 @@ public class UserInput : MonoBehaviour {
 			Worker a =(Worker) player.transform.GetComponentInChildren(typeof(Worker));
 
 			if(player.humanControlled&&player&&a){
-				Camera.main.transform.position = new Vector3(a.transform.position.x,Camera.main.transform.position.y,a.transform.position.z);
+				Camera.main.transform.position = new Vector3(a.transform.position.x,Camera.main.transform.position.y,a.transform.position.z-5);
 			}
 		}
 	}
