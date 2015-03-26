@@ -39,15 +39,16 @@
 	<Reference Include="System.Core" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="UnityEngine">
-	  <HintPath>D:/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>D:/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Audio\AudioElement.cs" />
      <Compile Include="Assets\FogOfWar\EditFogOfWarTex.cs" />
+     <Compile Include="Assets\Menu\Scripts\Controls.cs" />
      <Compile Include="Assets\Menu\Scripts\MainMenu.cs" />
      <Compile Include="Assets\Menu\Scripts\Menu.cs" />
      <Compile Include="Assets\Menu\Scripts\PauseMenu.cs" />
@@ -74,6 +75,7 @@
      <Compile Include="Assets\WorldObject\TeamColor.cs" />
      <Compile Include="Assets\WorldObject\Unit\Tank\Tank.cs" />
      <Compile Include="Assets\WorldObject\Unit\Tank\TankProjectile.cs" />
+     <Compile Include="Assets\WorldObject\Unit\TankII\TankII.cs" />
      <Compile Include="Assets\WorldObject\Unit\Unit.cs" />
      <Compile Include="Assets\WorldObject\Unit\Units.cs" />
      <Compile Include="Assets\WorldObject\Unit\Worker\Worker.cs" />
@@ -84,10 +86,10 @@
      <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
      <None Include="Assets\Standard Assets\Projectors\Sources\Shaders\Projector Light.shader" />
  <Reference Include="Assembly-UnityScript-firstpass">
- <HintPath>C:/Users/Joris/Documents/RTSgame/MyRTSGame/Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll</HintPath>
+ <HintPath>C:/Users/Frits/Documents/RTSgame/MyRTSGame/Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.UI">
- <HintPath>D:/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.2/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.2/UnityEngine.UI.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>
